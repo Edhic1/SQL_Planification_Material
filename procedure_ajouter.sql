@@ -37,7 +37,7 @@ p_quantite IN NUMBER
 AS
 BEGIN
 INSERT INTO Materiel (id_mat, nomM, type, quantite)
-VALUES (seq_Materiel.NEXTVAL, p_nomM, p_type, p_quantite;
+VALUES (seq_Materiel.NEXTVAL, p_nomM, p_type, p_quantite);
 END;
 /
 
