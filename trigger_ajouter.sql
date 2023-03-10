@@ -6,10 +6,10 @@ lorsqu'une nouvelle ligne est insérée ou mise à jour dans la table Departemen
 
 */
 CREATE OR REPLACE TRIGGER trg_nomD_Departement
-BEFORE INSERT OR UPDATE ON Departement
+BEFORE INSERT OR UPDATE ON DEPARTEMENT
 FOR EACH ROW
 BEGIN
-    IF LENGTH(:NEW.nomD) > 50 THEN
+    IF LENGTH(:NEW.NOMD) > 50 THEN
         RAISE_APPLICATION_ERROR(-20001, 'Le nom du département doit contenir moins de 50 caractères.');
     END IF;
 END;
@@ -24,10 +24,10 @@ lorsque la quantité est mise à jour dans la table Materiel.
 */
 
 CREATE OR REPLACE TRIGGER trg_quantite_Materiel
-BEFORE UPDATE ON Materiel
+BEFORE UPDATE ON MATERIEL
 FOR EACH ROW
 BEGIN
-    IF :NEW.quantite < 0 THEN
+    IF :NEW.QUANTITE < 0 THEN
         RAISE_APPLICATION_ERROR(-20002, 'La quantité de matériel doit être positive.');
     END IF;
 END;
@@ -43,10 +43,10 @@ lorsqu'une nouvelle ligne est insérée ou mise à jour dans la table Personne.
 */
 
 CREATE OR REPLACE TRIGGER trg_dateEmb_Personne
-BEFORE INSERT OR UPDATE ON Personne
+BEFORE INSERT OR UPDATE ON PERSONNE
 FOR EACH ROW
 BEGIN
-    IF :NEW.dateEmb > SYSDATE THEN
+    IF :NEW.DATEEMB > SYSDATE THEN
         RAISE_APPLICATION_ERROR(-20003, 'La date d''embauche ne peut pas être postérieure à la date actuelle.');
     END IF;
 END;
@@ -62,10 +62,10 @@ lorsqu'une nouvelle ligne est insérée dans la table Projet.
 */
 
 CREATE OR REPLACE TRIGGER trg_dateDeb_Projet
-BEFORE INSERT ON Projet
+BEFORE INSERT ON PROJET
 FOR EACH ROW
 BEGIN
-    IF :NEW.dateDeb > SYSDATE THEN
+    IF :NEW.DATEDEB > SYSDATE THEN
         RAISE_APPLICATION_ERROR(-20004, 'La date de début du projet ne peut pas être postérieure à la date actuelle.');
     END IF;
 END;
@@ -82,10 +82,10 @@ la tâche lorsqu'une nouvelle ligne est insérée ou mise à jour dans la table 
 */
 
 CREATE OR REPLACE TRIGGER trg_date_echeance_Tache
-BEFORE INSERT OR UPDATE ON Tache
+BEFORE INSERT OR UPDATE ON TACHE
 FOR EACH ROW
 BEGIN
-    IF :NEW.date_echeance < :NEW.date_creation THEN
+    IF :NEW.DATE_ECHEANCE < :NEW.DATE_CREATION THEN
         RAISE_APPLICATION_ERROR(-20005, 'La date d''échéance de la tâche doit être postérieure à la date de création.');
     END IF;
 END;

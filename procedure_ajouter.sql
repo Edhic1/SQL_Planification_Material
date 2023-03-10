@@ -31,13 +31,12 @@ END;
 -- Procédure pour l'ajout d'un matériel
 CREATE OR REPLACE PROCEDURE ajouter_materiel (
 p_nomM IN VARCHAR2,
-p_type IN VARCHAR2,
-p_quantite IN NUMBER
+p_type IN VARCHAR2
 )
 AS
 BEGIN
-INSERT INTO Materiel (id_mat, nomM, type, quantite)
-VALUES (seq_Materiel.NEXTVAL, p_nomM, p_type, p_quantite);
+INSERT INTO Materiel (id_mat, nomM, type)
+VALUES (seq_Materiel.NEXTVAL, p_nomM, p_type);
 END;
 /
 
@@ -59,7 +58,6 @@ END;
 
 -- Procédure pour l'ajout d'une tâche
 CREATE OR REPLACE PROCEDURE ajouter_tache (
-p_date_creation IN DATE,
 p_date_echeance IN DATE,
 p_duree_estimee IN VARCHAR2,
 p_idProj IN NUMBER,
@@ -67,8 +65,8 @@ p_pn IN NUMBER
 )
 AS
 BEGIN
-INSERT INTO Tache (idTache, date_creation, date_echeance, duree_estimee, idProj, pn)
-VALUES (seq_Tache.NEXTVAL, p_date_creation, p_date_echeance, p_duree_estimee, p_idProj, p_pn);
+INSERT INTO Tache (idTache, date_echeance, duree_estimee, idProj, pn)
+VALUES (seq_Tache.NEXTVAL, p_date_echeance, p_duree_estimee, p_idProj, p_pn);
 END;
 /
 
