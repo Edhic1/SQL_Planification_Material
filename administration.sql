@@ -1,70 +1,77 @@
 /*************************** creation des fontions et porcedure aide ****************/
 
-CREATE OR REPLACE FUNCTION VERIFIERMOTPASSE(identifi VARCHAR2 ,nouveau VARCHAR2,encien VARCHAR2) RETURN BOOLEAN IS
+CREATE OR REPLACE FUNCTION VERIFIERMOTPASSE(
+    IDENTIFI VARCHAR2,
+    NOUVEAU VARCHAR2,
+    ENCIEN VARCHAR2
+) RETURN BOOLEAN IS
 BEGIN
- if(nouveau = encien or LENGTH(nouveau)<8  OR NOT REGEXP_LIKE(nouveau, '[^a-zA-Z0-9]'))  THEN
-    RETURN FALSE;
- END if;
- return TRUE;
-
+    IF(NOUVEAU = ENCIEN
+    OR LENGTH(NOUVEAU)<8
+    OR NOT REGEXP_LIKE(NOUVEAU, '[^a-zA-Z0-9]')) THEN
+        RETURN FALSE;
+    END IF;
+    RETURN TRUE;
 END;
 /
 
-create or REPLACE FUNCTION genereMotpasse(longueur INT) RETURN VARCHAR2 IS
-    alphabet VARCHAR2(60) := 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    resultat VARCHAR2(60):='';
-    tmp INT;
+CREATE OR REPLACE FUNCTION GENEREMOTPASSE(
+    LONGUEUR INT
+) RETURN VARCHAR2 IS
+    ALPHABET VARCHAR2(60) := 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    RESULTAT VARCHAR2(60):='';
+    TMP      INT;
 BEGIN
-    FOR i IN 1..longueur LOOP
-        tmp:=dbms_random.value(1, length(alphabet));
-        resultat := resultat || substr(alphabet,tmp,tmp);
+    FOR I IN 1..LONGUEUR LOOP
+        TMP:=DBMS_RANDOM.VALUE(1, LENGTH(ALPHABET));
+        RESULTAT := RESULTAT
+            || SUBSTR(ALPHABET, TMP, TMP);
     END LOOP;
-    RETURN resultat;
+    RETURN RESULTAT;
 END;
 /
 
 /************************** creation des PROFILE *********************/
 
 
-/*////////////////// profile pour les cheg //////////////////////////*/
-create PROFILE ProfileChef LIMIT
-SESSIONS_PER_USER 2
-IDLE_TIME 2
-PASSWORD_LIFE_TIME 10
-PASSWORD_VERIFY_FUNCTION VERIFIERMOTPASSE ;
+/*////////////////// PROFILE POUR LES CHEG ///////////////////////// /*/
 
-/*////////////////// profile pour les employees ////////////////////////*/
-create PROFILE ProfileEmp LIMIT
-SESSIONS_PER_USER 2
-IDLE_TIME 2
-PASSWORD_LIFE_TIME 10
-PASSWORD_VERIFY_FUNCTION VERIFIERMOTPASSE ;
+CREATE PROFILE PROFILECHEF LIMIT SESSIONS_PER_USER 2 IDLE_TIME 2 PASSWORD_LIFE_TIME 10 PASSWORD_VERIFY_FUNCTION VERIFIERMOTPASSE;
+
+/*////////////////// PROFILE POUR LES EMPLOYEES /////////////////////// /*/
+
+CREATE PROFILE PROFILEEMP LIMIT SESSIONS_PER_USER 2 IDLE_TIME 2 PASSWORD_LIFE_TIME 10 PASSWORD_VERIFY_FUNCTION VERIFIERMOTPASSE;
 
 /************************** creation des utilisateurs *****************************/
 
 /* creation d'une table user contient les utilisateur et les mot de passe */
 
-create sequence seqp start with 1 increment by 1;
-CREATE TABLE userPassword(
-    idus int PRIMARY KEY,
-    user VARCHAR2(50),
+CREATE SEQUENCE SEQP START WITH 1 INCREMENT BY 1;
+
+CREATE TABLE USERPASSWORD(
+    IDUS INT PRIMARY KEY,
+    USER VARCHAR2(50),
     PASSWORD VARCHAR2(50)
 );
 
-create or REPLACE PROCEDURE creeUtilisateur
-IS
-CURSOR perC is SELECT NOMP from personne ;
-tmp VARCHAR(60);
+CREATE OR REPLACE PROCEDURE CREEUTILISATEUR IS
+    CURSOR PERC IS
+        SELECT
+            NOMP
+        FROM
+            PERSONNE;
+    TMP VARCHAR(60);
 BEGIN
-for i in perC
-LOOP
-tmp:=genereMotpasse(5);
-create USER i.nomp IDENTIFIED by tmp ;
-INSERT INTO userPassword VALUES(seqp.nextval,i.nomp,tmp);
-END loop;
+    FOR I IN PERC LOOP
+        TMP:=GENEREMOTPASSE(5);
+        CREATE USER I.NOMP IDENTIFIED BY TMP;
+        INSERT INTO USERPASSWORD VALUES(
+            SEQP.NEXTVAL,
+            I.NOMP,
+            TMP
+        );
+    END LOOP;
 END;
 /
 
-
 /************************* creation des roles *************************/
-

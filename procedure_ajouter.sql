@@ -9,7 +9,7 @@ p_etatP IN BOOLEAN,
 p_ndep IN NUMBER
 )
 AS
-BEGIN
+BEGIN 
 INSERT INTO Personne (pn, nomP, prenom, email, dateEmb, titre, etatP, ndep)
 VALUES (seq_Personne.NEXTVAL, p_nomP, p_prenom, p_email, p_dateEmb, p_titre, p_etatP, p_ndep);
 END;

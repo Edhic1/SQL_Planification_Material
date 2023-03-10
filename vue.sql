@@ -84,11 +84,10 @@ CREATE OR REPLACE VIEW AFFICHERMATPROJ(
         PROJET   PR,
         MATERIEL M
     WHERE
-        pr.idProj=m.idProj
+        PR.IDPROJ=M.IDPROJ
         AND PR.PN=(
             SELECT
                 USER
             FROM
                 DUAL
         );
-
