@@ -30,6 +30,51 @@ CREATE OR REPLACE VIEW CONSULETTACHEEMP(
                 DUAL
         );
 
+/****************************  cette vue permet au chef de projet de voir le tache affecter a chaque personne dans un PROJECT   *****************************************/
+CREATE OR REPLAC VIEW AFFICHETTACHECHEF(
+    NOMP,
+    DATE_CREATION,
+    DATE_ECHEANCE,
+    DUREE_ESTIMEE,
+    ETATT,
+    DECRIPTION,
+    NOMM
+) AS
+    SELECT
+        P.NOMP DATE_CREATION,
+        DATE_ECHEANCE,
+        DUREE_ESTIMEE,
+        ETATT,
+        DECRIPTION,
+        M.NOMM
+    FROM
+        TACHE T,
+        AFFECTATIONMATERIEL A,
+        MATERIEL M,
+        PROJECT PR,
+        AFFECTATIONPERSONNEL AFP,
+        PERSONNE P
+    WHERE
+        T.IDTACHE=A.IDTACHE
+        AND A.ID_MAT=M.ID_MAT,
+        AND T.IDPROJ=AFP.IDPROJ
+        AND T.PN=AFP.PN
+        AND AFP.IDPROJ=PR.IDPROJ
+        AND AFP.PN=P.PN
+        AND PR.PN=(
+            SELECT
+                PN
+            FROM
+                PERSONNE
+            WHERE
+                NOMP =(
+                    SELECT
+                        USER
+                    FROM
+                        DUAL
+                )
+        );
+
 /********************** cette vue permet au chef de projet de voir tout les personne qui appatient a ce projet *********************************/
 
 CREATE OR REPLACE VIEW AFFICHERPERPROJ(

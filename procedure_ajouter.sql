@@ -97,3 +97,32 @@ INSERT INTO Tache (idTache, date_creation, date_echeance, duree_estimee, idProj,
 VALUES (seq_Tache.NEXTVAL, p_date_creation, p_date_echeance, p_duree_estimee, p_idProj, p_pn);
 END;
 /
+
+/*****  procedure pour affecte personne a un projet      ******/
+CREATE or REPLACE affecterpersonneAprojet(id_per NUMBER,id_poj NUMBER,DATEDEBUT1 DATE,DATEFIN1 DATE)
+IS
+BEGIN
+INSERT INTO AFFECTATIONPERSONNEL 
+VALUES (id_per,id_poj,DATEDEBUT1,DATEFIN1);
+END;
+/
+/****   procedure pour affecte materiel a un projet   *****/
+
+CREATE or REPLACE affecterMaterielAprojet(id_mat NUMBER,id_poj NUMBER,QUANTITE1 NUMBER)
+IS
+BEGIN
+INSERT INTO CONTIENT 
+VALUES (id_per,id_poj,DATEDEBUT1,DATEFIN1);
+END;
+/
+
+/*********** procedure affecter materiel a une tache dans un projet ***************/
+
+CREATE or REPLACE affecterMaterielTache(id_mat1 NUMBER,id_tache NUMBER,DATEDEBUTM DATE,DATEFINM DATE)
+IS
+BEGIN
+INSERT INTO AFFECTATIONMATERIEL
+VALUES (id_mat1,id_tache,DATEDEBUTM ,DATEFINM );
+END;
+/
+

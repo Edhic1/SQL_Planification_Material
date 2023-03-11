@@ -15,6 +15,13 @@ BEGIN
 END;
 /
 
+CREATE or REPLACE PROCEDURE unlokuser(name VARCHAR2)
+IS
+BEGIN
+EXECUTE IMMEDIATE 'ALTER USER'|| name||' ACCOUNT UNLOCK';
+END;
+/
+
 CREATE OR REPLACE FUNCTION GENEREMOTPASSE(
     LONGUEUR INT
 ) RETURN VARCHAR2 IS
@@ -30,6 +37,8 @@ BEGIN
     RETURN RESULTAT;
 END;
 /
+
+
 
 /************************** creation des PROFILE *********************/
 

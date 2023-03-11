@@ -90,3 +90,15 @@ BEGIN
     END IF;
 END;
 /
+
+/******** cette TRIGGER permet de blocker l'ajout d'un utilisateur si il travaille dans un autre projet */
+CREATE or REPLACE TRIGGER trg_block_utl
+BEFORE INSERT ON AFFECTATIONPERSONNEL
+for EACH ROW
+BEGIN
+if(:NEW.pn in (SELECT pn for AFFECTATIONPERSONNEL WHERE pn=:NEW.pn)) THEN
+  RAISE_APPLICATION_ERROR(-20006,'empleye est dejat affectee a un projet');
+END IF;
+end;
+/
+
