@@ -1,3 +1,4 @@
+DROP TABLE CONTIENT;
 DROP TABLE AffectationMateriel;
 DROP TABLE AffectationPersonnel;
 DROP TABLE Tache;
