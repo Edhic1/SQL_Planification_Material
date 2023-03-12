@@ -24,7 +24,7 @@ lorsque la quantité est mise à jour dans la table Materiel.
 */
 
 CREATE OR REPLACE TRIGGER trg_quantite_Materiel
-BEFORE UPDATE ON MATERIEL
+BEFORE UPDATE or INSERT ON CONTIENT
 FOR EACH ROW
 BEGIN
     IF :NEW.QUANTITE < 0 THEN
@@ -94,9 +94,14 @@ END;
 /******** cette TRIGGER permet de blocker l'ajout d'un utilisateur si il travaille dans un autre projet */
 CREATE or REPLACE TRIGGER trg_block_utl
 BEFORE INSERT ON AFFECTATIONPERSONNEL
-for EACH ROW
+FOR EACH ROW
+DECLARE
+  v_id NUMBER;
 BEGIN
-if(:NEW.pn in (SELECT pn for AFFECTATIONPERSONNEL WHERE pn=:NEW.pn)) THEN
+  SELECT PN INTO v_id
+  FROM AFFECTATIONPERSONNEL
+  WHERE pn = :NEW.pn;
+if :NEW.pn in (v_id) THEN
   RAISE_APPLICATION_ERROR(-20006,'empleye est dejat affectee a un projet');
 END IF;
 end;
