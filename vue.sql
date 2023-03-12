@@ -17,12 +17,12 @@ CREATE OR REPLACE VIEW CONSULETTACHEEMP(
         DECRIPTION,
         M.NOMM
     FROM
-        TACHE T,
+        TACHE               T,
         AFFECTATIONMATERIEL A,
-        MATERIEL M
+        MATERIEL            M
     WHERE
         T.IDTACHE=A.IDTACHE
-        AND A.ID_MAT=M.ID_MAT,
+        AND A.ID_MAT=M.ID_MAT
         AND T.PN=(
             SELECT
                 USER
@@ -31,8 +31,8 @@ CREATE OR REPLACE VIEW CONSULETTACHEEMP(
         );
 
 /****************************  cette vue permet au chef de projet de voir le tache affecter a chaque personne dans un PROJECT   *****************************************/
-CREATE OR REPLAC VIEW AFFICHETTACHECHEF(
-    NOMP,
+CREATE OR REPLACE VIEW AFFICHETTACHECHEF(
+    PN,
     DATE_CREATION,
     DATE_ECHEANCE,
     DUREE_ESTIMEE,
@@ -41,22 +41,23 @@ CREATE OR REPLAC VIEW AFFICHETTACHECHEF(
     NOMM
 ) AS
     SELECT
-        P.NOMP DATE_CREATION,
+        P.PN,
+        DATE_CREATION,
         DATE_ECHEANCE,
         DUREE_ESTIMEE,
         ETATT,
         DECRIPTION,
         M.NOMM
     FROM
-        TACHE T,
-        AFFECTATIONMATERIEL A,
-        MATERIEL M,
-        PROJECT PR,
+        TACHE                T,
+        AFFECTATIONMATERIEL  A,
+        MATERIEL             M,
+        PROJET               PR,
         AFFECTATIONPERSONNEL AFP,
-        PERSONNE P
+        PERSONNE             P
     WHERE
         T.IDTACHE=A.IDTACHE
-        AND A.ID_MAT=M.ID_MAT,
+        AND A.ID_MAT=M.ID_MAT
         AND T.IDPROJ=AFP.IDPROJ
         AND T.PN=AFP.PN
         AND AFP.IDPROJ=PR.IDPROJ
@@ -87,7 +88,7 @@ CREATE OR REPLACE VIEW AFFICHERPERPROJ(
     ETATP
 ) AS
     SELECT
-        PN,
+        P.PN,
         NOMP,
         PRENOM,
         EMAIL,
@@ -121,15 +122,17 @@ CREATE OR REPLACE VIEW AFFICHERMATPROJ(
 ) AS
     SELECT
         NOMM,
-        TYPEM,
-        QUANTITE,
+        TYPE,
+        c.QUANTITE,
         ETATD,
         ETATM
     FROM
         PROJET   PR,
+        CONTIENT C,
         MATERIEL M
     WHERE
-        PR.IDPROJ=M.IDPROJ
+        PR.IDPROJ=C.IDPROJ
+        AND C.ID_MAT=M.ID_MAT
         AND PR.PN=(
             SELECT
                 USER

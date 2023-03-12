@@ -25,3 +25,7 @@ INSERT INTO AFFECTATIONPERSONNEL (PN, IDPROJ, DATEDEBUT, DATEFIN) VALUES
 
 INSERT INTO TACHE (IDTACHE, DATE_ECHEANCE, DUREE_ESTIMEE, ETATT, DECRIPTION, IDPROJ, PN) VALUES 
 (SEQ_TACHE.NEXTVAL, TO_DATE('01/06/2023', 'DD/MM/YYYY'), '4 mois', 'en cours de execution', 'Description Tâche 1', 1, 1);
+
+
+
+/********************************* insersion par procedure *******************************************************/
