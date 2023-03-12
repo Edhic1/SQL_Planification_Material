@@ -5,7 +5,6 @@ CREATE OR REPLACE PROCEDURE AJOUTER_PERSONNE (
     P_EMAIL IN VARCHAR2,
     P_DATEEMB IN DATE,
     P_TITRE IN VARCHAR2,
-    P_ETATP IN BOOLEAN,
     P_NDEP IN NUMBER
 ) AS
 BEGIN
@@ -16,7 +15,6 @@ BEGIN
         EMAIL,
         DATEEMB,
         TITRE,
-        ETATP,
         NDEP
     ) VALUES (
         SEQ_PERSONNE.NEXTVAL,
@@ -25,7 +23,6 @@ BEGIN
         P_EMAIL,
         P_DATEEMB,
         P_TITRE,
-        P_ETATP,
         P_NDEP
     );
 END;
@@ -50,12 +47,12 @@ END;
 CREATE OR REPLACE PROCEDURE ajouter_materiel (
 p_nomM IN VARCHAR2,
 p_type IN VARCHAR2,
-p_quantite IN NUMBER
+p_id_proj IN NUMBER
 )
 AS
 BEGIN
-INSERT INTO Materiel (id_mat, nomM, type, quantite)
-VALUES (seq_Materiel.NEXTVAL, p_nomM, p_type, p_quantite);
+INSERT INTO Materiel (id_mat, nomM, type, IDPROJ)
+VALUES (seq_Materiel.NEXTVAL, p_nomM, p_type, p_id_proj);
 END;
 /
 
@@ -99,7 +96,7 @@ END;
 /
 
 /*****  procedure pour affecte personne a un projet      ******/
-CREATE or REPLACE affecterpersonneAprojet(id_per NUMBER,id_poj NUMBER,DATEDEBUT1 DATE,DATEFIN1 DATE)
+CREATE or REPLACE PROCEDURE  affecterpersonneAprojet(id_per NUMBER,id_poj NUMBER,DATEDEBUT1 DATE,DATEFIN1 DATE)
 IS
 BEGIN
 INSERT INTO AFFECTATIONPERSONNEL 
@@ -108,17 +105,17 @@ END;
 /
 /****   procedure pour affecte materiel a un projet   *****/
 
-CREATE or REPLACE affecterMaterielAprojet(id_mat NUMBER,id_poj NUMBER,QUANTITE1 NUMBER)
+CREATE or REPLACE PROCEDURE  affecterMaterielAprojet(id_mat NUMBER,id_poj NUMBER,QUANTITE1 NUMBER)
 IS
 BEGIN
 INSERT INTO CONTIENT 
-VALUES (id_per,id_poj,DATEDEBUT1,DATEFIN1);
+VALUES (id_mat,id_poj,QUANTITE1);
 END;
 /
 
 /*********** procedure affecter materiel a une tache dans un projet ***************/
 
-CREATE or REPLACE affecterMaterielTache(id_mat1 NUMBER,id_tache NUMBER,DATEDEBUTM DATE,DATEFINM DATE)
+CREATE or REPLACE PROCEDURE  affecterMaterielTache(id_mat1 NUMBER,id_tache NUMBER,DATEDEBUTM DATE,DATEFINM DATE)
 IS
 BEGIN
 INSERT INTO AFFECTATIONMATERIEL
