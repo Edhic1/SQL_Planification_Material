@@ -89,6 +89,32 @@ BEGIN
 END;
 /
 
+CREATE OR REPLACE PROCEDURE CREEUTILISATEUR2 IS
+CURSOR PERC IS
+        SELECT *
+        FROM PERSONNE;
+BEGIN
+  FOR I IN PERC LOOP
+        EXECUTE IMMEDIATE 'create user '|| I.NOMP ||' identified by 1234'; 
+        INSERT INTO USERPASSWORD VALUES(I.PN, I.NOMP,'1234');
+    END LOOP;
+
+END;
+/
+grant dba to Johnson,Williams,Brown,Jones
+
+CREATE OR REPLACE PROCEDURE droperUser IS
+CURSOR PERC IS
+        SELECT *
+        FROM PERSONNE;
+BEGIN
+  FOR I IN PERC LOOP
+        EXECUTE IMMEDIATE 'drop user '|| I.NOMP ; 
+    END LOOP;
+
+END;
+/
+
 
 
 /************************** creation de chef *****************************/
