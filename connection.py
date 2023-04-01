@@ -38,13 +38,19 @@ def index():
         data = request.get_json()
         username = data['username']
         password = data['password']
+        
 
         # connexion à la base de données Oracle
         try:
             dsn = cx_Oracle.makedsn(host='localhost', port='1521', sid='xe')
             session = cx_Oracle.connect(user=username, password=password, dsn=dsn)
+
+            session['oracle'] = {
+                'username': username,
+                'password': password,
+                'dsn': dsn
+            }
             # store the session in Flask-Session
-            session['oracle'] = cx_Oracle.connect(user=username, password=password, dsn=dsn)
             session['user'] = username
             Session(app) # Initialize the session
 
@@ -63,7 +69,8 @@ def index():
 def get_data_mat():
     # Retrieve the session variables
     username = session.get('user')
-    conn = session.get('oracle')
+    connval = session.get('oracle')
+    conn = cx_Oracle.connect(user=connval['username'], password=connval['password'], dsn=connval['dsn'])
     if not username or not conn:
         return redirect(url_for('test'))
 
@@ -87,7 +94,8 @@ def get_data_mat():
 def get_data_proj():
     # Retrieve the session variables
     username = session.get('user')
-    conn = session.get('oracle')
+    connval = session.get('oracle')
+    conn = cx_Oracle.connect(user=connval['username'], password=connval['password'], dsn=connval['dsn'])
     if not username or not conn:
         return redirect(url_for('test'))
 
@@ -112,7 +120,8 @@ def get_data_proj():
 @app.route('/info')
 def get_data_info():
     username = session.get('user')
-    conn = session.get('oracle')
+    connval = session.get('oracle')
+    conn = cx_Oracle.connect(user=connval['username'], password=connval['password'], dsn=connval['dsn'])
 
     if not username or not conn:
         return 'Connexion à Flask is running'
