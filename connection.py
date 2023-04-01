@@ -60,7 +60,7 @@ def index():
         return jsonify(data)
 
 @app.route('/materiel')
-def get_data():
+def get_data_mat():
     # Retrieve the session variables
     username = session.get('user')
     conn = session.get('oracle')
@@ -84,7 +84,7 @@ def get_data():
     return jsonify(data)
 
 @app.route('/projet')
-def get_data():
+def get_data_proj():
     # Retrieve the session variables
     username = session.get('user')
     conn = session.get('oracle')
@@ -110,7 +110,7 @@ def get_data():
 
 
 @app.route('/info')
-def test():
+def get_data_info():
     username = session.get('user')
     conn = session.get('oracle')
 
