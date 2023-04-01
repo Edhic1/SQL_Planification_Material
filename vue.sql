@@ -139,3 +139,11 @@ CREATE OR REPLACE VIEW AFFICHERMATPROJ(
             FROM
                 DUAL
         );
+
+
+/*********** cette view permet d'afficher tout les projet pour le chef de projet actuellement connecter a cette session             *********************/
+
+create or replace view afficherProjet(idProjet,nomProjet,dateDeb,description,chefProjet,etatProjet)
+as
+SELECT IDPROJ,NOMPROJ,DATEDEB,DESCRIPTION,pr.PN,ETATPROJ from PROJET pr,PERSONNE p
+where pr.pn=p.pn and  UPPER(P.nomp) = USER;

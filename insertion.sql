@@ -5,12 +5,23 @@ INSERT INTO PERSONNE (PN, NOMP, PRENOM, EMAIL, DATEEMB, TITRE, ETATP, NDEP) VALU
  (SEQ_PERSONNE.NEXTVAL, 'Dupont', 'Jean', 'jean.dupont@entreprise.com', TO_DATE('01/01/2022', 'DD/MM/YYYY'), 'Ingénieur', 'TRUE', 1);
 INSERT INTO PERSONNE (PN, NOMP, PRENOM, EMAIL, DATEEMB, TITRE, ETATP, NDEP) VALUES 
  (SEQ_PERSONNE.NEXTVAL, 'Durand', 'Marie', 'marie.durand@entreprise.com', TO_DATE('01/02/2022', 'DD/MM/YYYY'), 'Assistant Marketing', 'TRUE', 2);
+/********************** insertion pour projet  *****************************/
+INSERT INTO PROJET (IDPROJ, NOMPROJ, DATEDEB, DESCRIPTION, PN, ETATPROJ) VALUES 
+(SEQ_PROJET.NEXTVAL, 'Projet 1', TO_DATE('01/01/2023', 'DD/MM/YYYY'), 'Description Projet 1',8, 'en cours de execution');
+INSERT INTO PROJET (IDPROJ, NOMPROJ, DATEDEB, DESCRIPTION, PN, ETATPROJ) VALUES 
+(SEQ_PROJET.NEXTVAL, 'Projet 2', TO_DATE('02/01/2023', 'DD/MM/YYYY'), 'Description Projet 2', 9, 'terminee');
 
 INSERT INTO PROJET (IDPROJ, NOMPROJ, DATEDEB, DESCRIPTION, PN, ETATPROJ) VALUES 
-(SEQ_PROJET.NEXTVAL, 'Projet 1', TO_DATE('01/01/2023', 'DD/MM/YYYY'), 'Description Projet 1', 1, 'en cours de execution');
+(SEQ_PROJET.NEXTVAL, 'Projet 3', TO_DATE('01/01/2023', 'DD/MM/YYYY'), 'Description Projet 3',8, 'en cours de execution');
 INSERT INTO PROJET (IDPROJ, NOMPROJ, DATEDEB, DESCRIPTION, PN, ETATPROJ) VALUES 
-(SEQ_PROJET.NEXTVAL, 'Projet 2', TO_DATE('02/01/2023', 'DD/MM/YYYY'), 'Description Projet 2', 2, 'terminee');
+(SEQ_PROJET.NEXTVAL, 'Projet 4', TO_DATE('01/01/2023', 'DD/MM/YYYY'), 'Description Projet 4',8, 'en cours de execution');
+INSERT INTO PROJET (IDPROJ, NOMPROJ, DATEDEB, DESCRIPTION, PN, ETATPROJ) VALUES 
+(SEQ_PROJET.NEXTVAL, 'Projet 5', TO_DATE('01/01/2023', 'DD/MM/YYYY'), 'Description Projet 5',8, 'en cours de execution');
+INSERT INTO PROJET (IDPROJ, NOMPROJ, DATEDEB, DESCRIPTION, PN, ETATPROJ) VALUES 
+(SEQ_PROJET.NEXTVAL, 'Projet 6', TO_DATE('01/01/2023', 'DD/MM/YYYY'), 'Description Projet 7',8, 'en cours de execution');
 
+
+/************************ insertion pour materiel ***********************************************/
 INSERT INTO MATERIEL (ID_MAT, NOMM, TYPE, ETATD, ETATM) VALUES 
 (SEQ_MATERIEL.NEXTVAL, 'Ordinateur portable', 'Informatique', 'TRUE', 'FALSE');
 INSERT INTO MATERIEL (ID_MAT, NOMM, TYPE, ETATD, ETATM) VALUES 
