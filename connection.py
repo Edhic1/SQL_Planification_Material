@@ -1,12 +1,19 @@
 from flask import Flask, jsonify, request, redirect, url_for, session
 from flask_session import Session
 import cx_Oracle
+import secrets
+
 
 app = Flask(__name__)
 
+secret_key = secrets.token_hex(16)
+
+
 # Configure Flask-Session to use an Oracle database
 app.config['SESSION_TYPE'] = 'oracle'
+app.config['SECRET_KEY'] = secret_key.encode('utf-8')
 
+Session(app) # Initialize the session
 # Connexion à la base de données Oracle
 
 # dsn = cx_Oracle.makedsn(host='localhost', port='1521', sid='xe')
@@ -52,7 +59,6 @@ def index():
             }
             # store the session in Flask-Session
             session['user'] = username
-            Session(app) # Initialize the session
 
             # si la connexion est réussie, retourner une réponse 200 OK
             return jsonify({'status': 'success'}), 200
