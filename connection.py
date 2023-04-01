@@ -75,23 +75,65 @@ def get_data():
     data = []
     for row in result:
         data.append({
-            'id': row[0],
-            'nom': row[1],
-            'prenom': row[2]
+            'ID_MAT': row[0],
+            'NOMM': row[1],
+            'TYPE': row[2],
+            'ETATD': row[2],
+            'ETATM': row[2]
         })
     return jsonify(data)
 
-@app.route('/test')
+@app.route('/projet')
+def get_data():
+    # Retrieve the session variables
+    username = session.get('user')
+    conn = session.get('oracle')
+    if not username or not conn:
+        return redirect(url_for('test'))
+
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM PROJET')
+    result = cursor.fetchall()   
+
+    # Transformation des données en format JSON
+    data = []
+    for row in result:
+        data.append({
+            'IDPROJ': row[0],
+            'NOMPROJ': row[1],
+            'DATEDEB': row[2],
+            'DESCRIPTION': row[3],
+            'PN': row[4],
+            'ETATPROJ': row[5]
+        })
+    return jsonify(data)
+
+
+@app.route('/info')
 def test():
     username = session.get('user')
     conn = session.get('oracle')
 
     if not username or not conn:
         return 'Connexion à Flask is running'
+    
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM PERSONNE where PN = ' + username)
+    result = cursor.fetchall()  
 
-    else:
-        data = [{'user': username}]
-        return jsonify(data)
+    data = [{
+
+        'PN': result[0],
+        'NOMP': result[1],
+        'PRENOM': result[2],
+        'EMAIL': result[3],
+        'DATEEMB': result[4],
+        'TITRE': result[5],
+        'ETATP': result[6],
+        'NDEP': result[7],
+        'ischef': result[8]
+    }]
+    return jsonify(data)
 
 
 
