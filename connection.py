@@ -6,12 +6,23 @@ app = Flask(__name__)
 
 # Route pour récupérer les données en format JSON
 
+@app.route('/') # for testing
+def index():
+    return 'Connexion à la base de données Oracle avec Python et Flask is running'
 
 @app.route('/materiel')
 def get_data():
    # data = request.get_json()
     username = 'system'
     password = '2002****'
+    """
+    or use for localhost :
+        conn = cx_Oracle.connect(
+        'system/2002****@localhost:1521/XEPDB1')
+    for remote database :
+        conn = cx_Oracle.connect(
+        'super/oracle_db@//20.55.44.15:1521/ORCLCDB.localdomain')
+    """
     conn = cx_Oracle.connect(
         'system/2002****@192.168.42.122:1521/XEPDB1')
     cursor = conn.cursor()
@@ -88,4 +99,5 @@ def authentification():
 
 if __name__ == '__main__':
     # app.run(debug=True)
+    # or app.run(host='0.0.0.0', port=5000, debug=True)
     app.run(host='192.168.42.122', port=5000, debug=True, threaded=False)

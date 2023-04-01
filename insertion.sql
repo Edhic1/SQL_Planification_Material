@@ -2,14 +2,13 @@ INSERT INTO DEPARTEMENT (NDEP, NOMD) VALUES (SEQ_DEPARTEMENT.NEXTVAL, 'Informati
 INSERT INTO DEPARTEMENT (NDEP, NOMD) VALUES (SEQ_DEPARTEMENT.NEXTVAL, 'Marketing');
 
 INSERT INTO PERSONNE (PN, NOMP, PRENOM, EMAIL, DATEEMB, TITRE, ETATP, NDEP) VALUES
- (SEQ_PERSONNE.NEXTVAL, 'Dupont', 'Jean', 'jean.dupont@entreprise.com', TO_DATE('01/01/2022', 'DD/MM/YYYY'), 'Ingénieur', 'TRUE', 1);
+ (SEQ_PERSONNE.NEXTVAL, 'Dupont', 'Jean', 'jean.dupont@entreprise.com', TO_DATE('09/05/2022', 'DD/MM/YYYY'), 'Ingénieur', 'TRUE', 1);
+INSERT INTO PERSONNE (PN, NOMP, PRENOM, EMAIL, DATEEMB, TITRE, ETATP, NDEP) VALUES 
+ (SEQ_PERSONNE.NEXTVAL, 'Durand', 'Marie', 'marie.durand@entreprise.com', TO_DATE('01/02/2020', 'DD/MM/YYYY'), 'Assistant Marketing', 'TRUE', 2);
+INSERT INTO PERSONNE (PN, NOMP, PRENOM, EMAIL, DATEEMB, TITRE, ETATP, NDEP) VALUES
+ (SEQ_PERSONNE.NEXTVAL, 'Mali', 'Dronyo', 'mali.dronyo@entreprise.com', TO_DATE('01/01/2021', 'DD/MM/YYYY'), 'Ingénieur', 'TRUE', 1);
 INSERT INTO PERSONNE (PN, NOMP, PRENOM, EMAIL, DATEEMB, TITRE, ETATP, NDEP) VALUES 
  (SEQ_PERSONNE.NEXTVAL, 'Durand', 'Marie', 'marie.durand@entreprise.com', TO_DATE('01/02/2022', 'DD/MM/YYYY'), 'Assistant Marketing', 'TRUE', 2);
-/********************** insertion pour projet  *****************************/
-INSERT INTO PROJET (IDPROJ, NOMPROJ, DATEDEB, DESCRIPTION, PN, ETATPROJ) VALUES 
-(SEQ_PROJET.NEXTVAL, 'Projet 1', TO_DATE('01/01/2023', 'DD/MM/YYYY'), 'Description Projet 1',8, 'en cours de execution');
-INSERT INTO PROJET (IDPROJ, NOMPROJ, DATEDEB, DESCRIPTION, PN, ETATPROJ) VALUES 
-(SEQ_PROJET.NEXTVAL, 'Projet 2', TO_DATE('02/01/2023', 'DD/MM/YYYY'), 'Description Projet 2', 9, 'terminee');
 
 INSERT INTO PROJET (IDPROJ, NOMPROJ, DATEDEB, DESCRIPTION, PN, ETATPROJ) VALUES 
 (SEQ_PROJET.NEXTVAL, 'Projet 3', TO_DATE('01/01/2023', 'DD/MM/YYYY'), 'Description Projet 3',8, 'en cours de execution');
@@ -63,6 +62,13 @@ INSERT INTO PERSONNE VALUES (SEQ_PERSONNE.NEXTVAL, 'Miller', 'Olivia', 'olivia.m
 INSERT INTO PERSONNE VALUES (SEQ_PERSONNE.NEXTVAL, 'Wilson', 'Thomas', 'thomas.wilson@entreprise.com', TO_DATE('01-09-2021', 'DD-MM-YYYY'), 'Employé', 'TRUE', 9);
 INSERT INTO PERSONNE VALUES (SEQ_PERSONNE.NEXTVAL, 'Davis', 'Ava', 'ava.davis@entreprise.com', TO_DATE('01-10-2021', 'DD-MM-YYYY'), 'Employé', 'TRUE', 10);
 
+
+/*************************************** insersion pour personne chef de projet ****************************************************/
+INSERT INTO PERSONNE (PN, NOMP, PRENOM, EMAIL, DATEEMB, TITRE, ETATP, NDEP) VALUES 
+ (SEQ_PERSONNE.NEXTVAL, 'Hicham', 'Bchina', 'hicham.bchina@entreprise.com', TO_DATE('01/02/2022', 'DD/MM/YYYY'), 'Chef de projet', 'TRUE', 2);
+
+ INSERT PERSONNE (PN, NOMP, PRENOM, EMAIL, DATEEMB, TITRE, ETATP, NDEP) VALUES 
+ (SEQ_PERSONNE.NEXTVAL, 'Alwafi', 'Mohamed', 'alwafi.mohamed@entreprise.com', TO_DATE('01/02/2022', 'DD/MM/YYYY'), 'Chef de projet', 'TRUE', 2);
 
 
 

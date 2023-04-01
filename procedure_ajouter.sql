@@ -103,7 +103,8 @@ INSERT INTO AFFECTATIONPERSONNEL
 VALUES (id_per,id_poj,DATEDEBUT1,DATEFIN1);
 END;
 /
-/****   procedure pour affecte materiel a un projet   *****/
+/*
+--  procedure pour affecte materiel a un projet   
 
 CREATE or REPLACE PROCEDURE  affecterMaterielAprojet(id_mat NUMBER,id_poj NUMBER,QUANTITE1 NUMBER)
 IS
@@ -112,6 +113,7 @@ INSERT INTO CONTIENT
 VALUES (id_mat,id_poj,QUANTITE1);
 END;
 /
+*/
 
 /*********** procedure affecter materiel a une tache dans un projet ***************/
 
