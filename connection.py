@@ -154,7 +154,11 @@ def get_data_info():
     }]
     return jsonify(data)
 
-
+@app.route('/deconnection')
+def delete_session():
+    # delete the entire session
+    session.clear()
+    return jsonify({'status': 'success'}), 200
 
 
 """
