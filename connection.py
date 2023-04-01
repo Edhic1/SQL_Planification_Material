@@ -11,9 +11,8 @@ secret_key = secrets.token_hex(16)
 
 # Configure Flask-Session to use an Oracle database
 app.config['SESSION_TYPE'] = 'oracle'
-app.config['SECRET_KEY'] = secret_key.encode('utf-8')
+app.secret_key = secret_key.encode('utf-8')
 
-Session(app) # Initialize the session
 # Connexion à la base de données Oracle
 
 # dsn = cx_Oracle.makedsn(host='localhost', port='1521', sid='xe')
@@ -50,7 +49,7 @@ def index():
         # connexion à la base de données Oracle
         try:
             dsn = cx_Oracle.makedsn(host='localhost', port='1521', sid='xe')
-            session = cx_Oracle.connect(user=username, password=password, dsn=dsn)
+            conn = cx_Oracle.connect(user=username, password=password, dsn=dsn)
 
             session['oracle'] = {
                 'username': username,
