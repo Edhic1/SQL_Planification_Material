@@ -35,6 +35,11 @@ remarque :
         http:/20.55.44.15:5000/ => donner  JSON payload. with user and pass null
         http://20.55.44.15:5000/?user=hicham&pass=1234 =>  donner  JSON payload. with user = hicham and pass = 1234
 
+    for POST method you can use curl command :
+        curl -X POST -H "Content-Type: application/json" -d '{"username":"super", "password":"1234"}' http://127.0.0.1:5000/
+        
+        => donner {"status":"success"}   if username and password are correct     
+
 """
 
 @app.route('/', methods=['POST', 'GET'])
