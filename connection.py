@@ -88,28 +88,36 @@ def index():
 	
 @app.route('/materiel', methods=['POST', 'GET'])
 def get_data_mat():
-    # Retrieve the session variables
-    username = session.get('user')
-    connval = session.get('oracle')
-    conn = cx_Oracle.connect(user=connval['username'], password=connval['password'], dsn=connval['dsn'])
-    if not username or not conn:
-        return redirect(url_for('info'))
+    if request.method == 'POST':
+        data = request.get_json()
+        session_id = data['session_id']
+        if 'session_id' in session and session_id == session['session_id']:
+            # Retrieve the session variables
+            connval = session.get('oracle')
 
-    cursor = conn.cursor()
-    cursor.execute('SELECT * FROM materiel')
-    result = cursor.fetchall()
+            conn = cx_Oracle.connect(user=connval['username'], password=connval['password'], dsn=connval['dsn'])
+            if not conn:
+                return redirect(url_for('info'))
 
-    # Transformation des données en format JSON
-    data = []
-    for row in result:
-        data.append({
-            'ID_MAT': row[0],
-            'NOMM': row[1],
-            'TYPE': row[2],
-            'ETATD': row[2],
-            'ETATM': row[2]
-        })
-    return jsonify(data)
+            cursor = conn.cursor()
+            cursor.execute('SELECT * FROM materiel')
+            result = cursor.fetchall()
+
+            # Transformation des données en format JSON
+            data = []
+            for row in result:
+                data.append({
+                    'ID_MAT': row[0],
+                    'NOMM': row[1],
+                    'TYPE': row[2],
+                    'ETATD': row[2],
+                    'ETATM': row[2]
+                })
+            return jsonify(data)
+        else:
+            return redirect('/info')
+    else:
+        return 'OK'
 
 @app.route('/projet', methods=['POST', 'GET'])
 def get_data_proj():
@@ -120,6 +128,8 @@ def get_data_proj():
 
             connval = session.get('oracle')
             conn = cx_Oracle.connect(user=connval['username'], password=connval['password'], dsn=connval['dsn'])
+            if not conn:
+                return redirect(url_for('info'))
             cursor = conn.cursor()
             cursor.execute('SELECT * FROM PROJET')
             result = cursor.fetchall()   
