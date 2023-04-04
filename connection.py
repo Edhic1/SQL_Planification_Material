@@ -10,16 +10,16 @@ secret_key = secrets.token_hex(16)
 
 
 # Configure Flask-Session to use an Oracle database
-app.config["SESSION_PERMANENT"] = False
-app.config["SESSION_TYPE"] = "filesystem"
+# app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_TYPE"] = 'oracle'
 app.secret_key = secret_key.encode('utf-8')
-Session(app)
 
 
 # Connexion à la base de données Oracle
 
-dsn = cx_Oracle.makedsn(host='localhost', port='1521', sid='xe') # for localhost oracle
-#dsn = cx_Oracle.makedsn(host='20.55.44.15', port='1521', service_name='ORCLCDB.localdomain') # for remote oracle
+dsn = cx_Oracle.makedsn(host='localhost', port='1521',
+                        sid='xe')  # for localhost oracle
+# dsn = cx_Oracle.makedsn(host='20.55.44.15', port='1521', service_name='ORCLCDB.localdomain') # for remote oracle
 
 # Route pour récupérer les données en format JSON
 
@@ -48,6 +48,7 @@ remarque :
 
 """
 
+
 @app.route('/', methods=['POST', 'GET'])
 def index():
     # récupération des données POST envoyées depuis l'application Android
@@ -55,7 +56,6 @@ def index():
         data = request.get_json()
         username = data['username']
         password = data['password']
-        
 
         # connexion à la base de données Oracle
         try:
@@ -63,19 +63,31 @@ def index():
 
             # store the connection in Flask-Session
             # we cant stock the connection object in Flask-Session (conn)
+            """
             session['oracle'] = {
                 'username': username,
                 'password': password,
                 'dsn': dsn
             }
-            session['user'] = username
-            session['session_id'] = session.sid
+            """
+            ses = secret_key.encode('utf-8')
+            app.config["SESSION_ORACLE"] = {
+                "session_id": ses,
+                "username": username,
+                "password": password,
+                "dsn": dsn,
+            }
+            Session(app)
+            # session['user'] = username
+            # session['session_id'] = session.sid
 
+            # session.modified = True
 
             # si la connexion est réussie, retourner une réponse 200 OK
 
-            #session_id = session.sid
-            return jsonify({'session id': session['session_id']}), 200
+            # session_id = session.sid
+            sev = ses.decode('utf-8')
+            return jsonify({'session_id': sev}), 200
 
         except cx_Oracle.DatabaseError as e:
             # si la connexion est échouée, retourner une réponse 401 Unauthorized
@@ -85,7 +97,8 @@ def index():
         password = request.args.get('pass')
         data = [{'user': user, 'passw': password}]
         return jsonify(data)
-	
+
+
 @app.route('/materiel', methods=['POST', 'GET'])
 def get_data_mat():
     if request.method == 'POST':
@@ -95,7 +108,8 @@ def get_data_mat():
             # Retrieve the session variables
             connval = session.get('oracle')
 
-            conn = cx_Oracle.connect(user=connval['username'], password=connval['password'], dsn=connval['dsn'])
+            conn = cx_Oracle.connect(
+                user=connval['username'], password=connval['password'], dsn=connval['dsn'])
             if not conn:
                 return redirect(url_for('info'))
 
@@ -119,21 +133,32 @@ def get_data_mat():
     else:
         return 'OK'
 
+
 @app.route('/projet', methods=['POST', 'GET'])
 def get_data_proj():
     if request.method == 'POST':
         data = request.get_json()
-        session_id = data['session_id']
-        if 'session_id' in session and session_id == session['session_id']:
+        array1 = data[0]
+        session_id = array1['session_id'].encode('utf-8')
+        """
+        found_sessions = []
+        print (session.items())
+        for key, value in session.items():
+            if 'session_id' in value and value['session_id'] == session_id:
+                found_sessions.append(key)
+        """
 
-            connval = session.get('oracle')
-            conn = cx_Oracle.connect(user=connval['username'], password=connval['password'], dsn=connval['dsn'])
+        if session_id and session_id == app.config["SESSION_ORACLE"].get('session_id'):
+            print('ok')
+            connval = app.config["SESSION_ORACLE"]
+            conn = cx_Oracle.connect(
+                user=connval.get('username'), password=connval.get('password'), dsn=connval.get('dsn'))
             if not conn:
                 return redirect(url_for('info'))
             cursor = conn.cursor()
             cursor.execute('SELECT * FROM PROJET')
-            result = cursor.fetchall()   
-
+            result = cursor.fetchall()
+            print (result)
             # Transformation des données en format JSON
             data = []
             for row in result:
@@ -152,24 +177,23 @@ def get_data_proj():
         return 'OK'
 
 
-
-
 @app.route('/info', methods=['POST', 'GET'])
 def get_data_info():
     if request.method == 'POST':
         data = request.get_json()
-        session_id = data['session_id']
+        session_id = data['session_id'].encode('utf-8')
         if 'session_id' in session and session_id == session['session_id']:
             username = session.get('user')
             connval = session.get('oracle')
-            conn = cx_Oracle.connect(user=connval['username'], password=connval['password'], dsn=connval['dsn'])
+            conn = cx_Oracle.connect(
+                user=connval['username'], password=connval['password'], dsn=connval['dsn'])
 
             if not username or not conn:
                 return 'Connexion à Flask is running'
-            
+
             cursor = conn.cursor()
             cursor.execute('SELECT * FROM PERSONNE where PN = ' + username)
-            result = cursor.fetchall()  
+            result = cursor.fetchall()
 
             data = [{
 
@@ -178,10 +202,10 @@ def get_data_info():
                 'PRENOM': result[2],
                 'EMAIL': result[3],
                 'DATEEMB': result[4],
-                'TITRE': result[5], # fonctionalité de l'employé
+                'TITRE': result[5],  # fonctionalité de l'employé
                 'ETATP': result[6],
                 'NDEP': result[7],
-                'ischef': result[8] # 1 si chef de projet, 0 sinon
+                'ischef': result[8]  # 1 si chef de projet, 0 sinon
             }]
             return jsonify(data)
         else:
@@ -189,15 +213,16 @@ def get_data_info():
     else:
         return 'OK'
 
-@app.route('/test',methods=['POST', 'GET'])
+
+@app.route('/test', methods=['POST', 'GET'])
 def test():
     # check if session id from post is exist in flask session id stocked in server memory
-    
+
     if request.method == 'POST':
         data = request.get_json()
         session_id = data['session_id']
         if 'session_id' in session and session_id == session['session_id']:
-            return jsonify({'session id': session_id,'user': session['user']}), 200
+            return jsonify({'session id': session_id, 'user': session['user']}), 200
         else:
             return jsonify({'session id': 'session id not found'}), 401
     else:
@@ -212,18 +237,14 @@ def decon():
         session_id = data['session_id']
         if 'session_id' in session and session_id == session['session_id']:
             session.clear()
-            return jsonify({'session id': session_id,'user': session['user']}), 200
+            return jsonify({'session id': session_id, 'user': session['user']}), 200
         else:
             return jsonify({'session id': 'session id not found'}), 401
     else:
         return 'OK'
 
 
-
-
-"""
 if __name__ == '__main__':
     # app.run(debug=True)
     # or app.run(host='0.0.0.0', port=5000, debug=True)
-    app.run(host='0.0.0.0.0', port=5000, debug=True, threaded=False)
-"""
+    app.run(host='0.0.0.0', port=5000, debug=True)
