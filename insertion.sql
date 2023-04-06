@@ -1,5 +1,45 @@
-INSERT INTO DEPARTEMENT (NDEP, NOMD) VALUES (SEQ_DEPARTEMENT.NEXTVAL, 'Informatique');
-INSERT INTO DEPARTEMENT (NDEP, NOMD) VALUES (SEQ_DEPARTEMENT.NEXTVAL, 'Marketing');
+-------------- insersion departement -----------------------------
+
+--INSERT INTO DEPARTEMENT (NDEP, NOMD) VALUES (SEQ_DEPARTEMENT.NEXTVAL, 'Informatique');
+--INSERT INTO DEPARTEMENT (NDEP, NOMD) VALUES (SEQ_DEPARTEMENT.NEXTVAL, 'Marketing');
+
+call AJOUTER_DEPARTEMENT('Informatique');
+call AJOUTER_DEPARTEMENT('Marketing');
+call AJOUTER_DEPARTEMENT('Finance');
+call AJOUTER_DEPARTEMENT('Ressources Humaines');
+call AJOUTER_DEPARTEMENT('Ventes');
+call AJOUTER_DEPARTEMENT('Juridique');
+call AJOUTER_DEPARTEMENT('Service client');
+call AJOUTER_DEPARTEMENT('Logistique');
+call AJOUTER_DEPARTEMENT('Production');
+call AJOUTER_DEPARTEMENT('Recherche et développement');
+
+---------------------- insersion personne -----------------------------------------
+-- pour appler cette prcedure vous devez cree un table userpassword , et donner au dev les pivilege create user et create session
+
+call AJOUTER_PERSONNE('Dupont', 'Jean', 'jean.dupont@entreprise.com','09/05/2022', 'Ingénieur',1);
+call AJOUTER_PERSONNE('Durand', 'Marie', 'marie.durand@entreprise.com','01/02/2020', 'Assistant Marketing',2);
+call AJOUTER_PERSONNE('Mali', 'Dronyo', 'mali.dronyo@entreprise.com','01/01/2021', 'Ingénieur',2);
+call AJOUTER_PERSONNE( 'Durand', 'Marie', 'marie.durand@entreprise.com','01/02/2022', 'Assistant Marketing', 2);
+call AJOUTER_PERSONNE( 'Doe', 'John', 'john.doe@entreprise.com','01-01-2021','Directeur', 1);
+call AJOUTER_PERSONNE( 'Smith', 'Emma', 'emma.smith@entreprise.com','01-02-2021', 'Manager', 2);
+call AJOUTER_PERSONNE('Johnson', 'Michael', 'michael.johnson@entreprise.com','01-03-2021', 'Manager',3);
+call AJOUTER_PERSONNE( 'Williams', 'Emily', 'emily.williams@entreprise.com','01-04-2021', 'Employé', 4);
+call AJOUTER_PERSONNE( 'Brown', 'James', 'james.brown@entreprise.com','01-05-2021', 'Employé', 'TRUE', 5);
+
+
+
+------------- personne --------------
+INSERT INTO PERSONNE VALUES (SEQ_PERSONNE.NEXTVAL, 'Doe', 'John', 'john.doe@entreprise.com', TO_DATE('01-01-2021', 'DD-MM-YYYY'), 'Directeur', 'TRUE', 1);
+INSERT INTO PERSONNE VALUES (SEQ_PERSONNE.NEXTVAL, 'Smith', 'Emma', 'emma.smith@entreprise.com', TO_DATE('01-02-2021', 'DD-MM-YYYY'), 'Manager', 'TRUE', 2);
+INSERT INTO PERSONNE VALUES (SEQ_PERSONNE.NEXTVAL, 'Johnson', 'Michael', 'michael.johnson@entreprise.com', TO_DATE('01-03-2021', 'DD-MM-YYYY'), 'Manager', 'TRUE', 3);
+INSERT INTO PERSONNE VALUES (SEQ_PERSONNE.NEXTVAL, 'Williams', 'Emily', 'emily.williams@entreprise.com', TO_DATE('01-04-2021', 'DD-MM-YYYY'), 'Employé', 'TRUE', 4);
+INSERT INTO PERSONNE VALUES (SEQ_PERSONNE.NEXTVAL, 'Brown', 'James', 'james.brown@entreprise.com', TO_DATE('01-05-2021', 'DD-MM-YYYY'), 'Employé', 'TRUE', 5);
+INSERT INTO PERSONNE VALUES (SEQ_PERSONNE.NEXTVAL, 'Jones', 'Sophie', 'sophie.jones@entreprise.com', TO_DATE('01-06-2021', 'DD-MM-YYYY'), 'Employé', 'TRUE', 6);
+INSERT INTO PERSONNE VALUES (SEQ_PERSONNE.NEXTVAL, 'Taylor', 'Daniel', 'daniel.taylor@entreprise.com', TO_DATE('01-07-2021', 'DD-MM-YYYY'), 'Employé', 'TRUE', 7);
+INSERT INTO PERSONNE VALUES (SEQ_PERSONNE.NEXTVAL, 'Miller', 'Olivia', 'olivia.miller@entreprise.com', TO_DATE('01-08-2021', 'DD-MM-YYYY'), 'Employé', 'TRUE', 8);
+INSERT INTO PERSONNE VALUES (SEQ_PERSONNE.NEXTVAL, 'Wilson', 'Thomas', 'thomas.wilson@entreprise.com', TO_DATE('01-09-2021', 'DD-MM-YYYY'), 'Employé', 'TRUE', 9);
+INSERT INTO PERSONNE VALUES (SEQ_PERSONNE.NEXTVAL, 'Davis', 'Ava', 'ava.davis@entreprise.com', TO_DATE('01-10-2021', 'DD-MM-YYYY'), 'Employé', 'TRUE', 10);
 
 INSERT INTO PERSONNE (PN, NOMP, PRENOM, EMAIL, DATEEMB, TITRE, ETATP, NDEP) VALUES
  (SEQ_PERSONNE.NEXTVAL, 'Dupont', 'Jean', 'jean.dupont@entreprise.com', TO_DATE('09/05/2022', 'DD/MM/YYYY'), 'Ingénieur', 'TRUE', 1);
@@ -7,8 +47,8 @@ INSERT INTO PERSONNE (PN, NOMP, PRENOM, EMAIL, DATEEMB, TITRE, ETATP, NDEP) VALU
  (SEQ_PERSONNE.NEXTVAL, 'Durand', 'Marie', 'marie.durand@entreprise.com', TO_DATE('01/02/2020', 'DD/MM/YYYY'), 'Assistant Marketing', 'TRUE', 2);
 INSERT INTO PERSONNE (PN, NOMP, PRENOM, EMAIL, DATEEMB, TITRE, ETATP, NDEP) VALUES
  (SEQ_PERSONNE.NEXTVAL, 'Mali', 'Dronyo', 'mali.dronyo@entreprise.com', TO_DATE('01/01/2021', 'DD/MM/YYYY'), 'Ingénieur', 'TRUE', 1);
-INSERT INTO PERSONNE (PN, NOMP, PRENOM, EMAIL, DATEEMB, TITRE, ETATP, NDEP) VALUES 
- (SEQ_PERSONNE.NEXTVAL, 'Durand', 'Marie', 'marie.durand@entreprise.com', TO_DATE('01/02/2022', 'DD/MM/YYYY'), 'Assistant Marketing', 'TRUE', 2);
+
+----------------- insersiont projet -------------------------------------------------
 
 INSERT INTO PROJET (IDPROJ, NOMPROJ, DATEDEB,DATEFIN, DESCRIPTION, PN, ETATPROJ) VALUES 
 (SEQ_PROJET.NEXTVAL, 'Projet 11', TO_DATE('01/01/2023', 'DD/MM/YYYY'),TO_DATE('01/01/2024', 'DD/MM/YYYY'), 'Description Projet 3',6, 'en cours de execution');
@@ -39,29 +79,7 @@ INSERT INTO TACHE (IDTACHE, DATE_ECHEANCE, DUREE_ESTIMEE, ETATT, DECRIPTION, IDP
 
 
 /**********************************************************************************************************/
------ departement -------------------
-INSERT INTO DEPARTEMENT VALUES (1, 'Informatique');
-INSERT INTO DEPARTEMENT VALUES (2, 'Finance');
-INSERT INTO DEPARTEMENT VALUES (3, 'Ressources Humaines');
-INSERT INTO DEPARTEMENT VALUES (4, 'Marketing');
-INSERT INTO DEPARTEMENT VALUES (5, 'Ventes');
-INSERT INTO DEPARTEMENT VALUES (6, 'Juridique');
-INSERT INTO DEPARTEMENT VALUES (7, 'Service client');
-INSERT INTO DEPARTEMENT VALUES (8, 'Logistique');
-INSERT INTO DEPARTEMENT VALUES (9, 'Production');
-INSERT INTO DEPARTEMENT VALUES (10, 'Recherche et développement');
 
-------------- personne --------------
-INSERT INTO PERSONNE VALUES (SEQ_PERSONNE.NEXTVAL, 'Doe', 'John', 'john.doe@entreprise.com', TO_DATE('01-01-2021', 'DD-MM-YYYY'), 'Directeur', 'TRUE', 1);
-INSERT INTO PERSONNE VALUES (SEQ_PERSONNE.NEXTVAL, 'Smith', 'Emma', 'emma.smith@entreprise.com', TO_DATE('01-02-2021', 'DD-MM-YYYY'), 'Manager', 'TRUE', 2);
-INSERT INTO PERSONNE VALUES (SEQ_PERSONNE.NEXTVAL, 'Johnson', 'Michael', 'michael.johnson@entreprise.com', TO_DATE('01-03-2021', 'DD-MM-YYYY'), 'Manager', 'TRUE', 3);
-INSERT INTO PERSONNE VALUES (SEQ_PERSONNE.NEXTVAL, 'Williams', 'Emily', 'emily.williams@entreprise.com', TO_DATE('01-04-2021', 'DD-MM-YYYY'), 'Employé', 'TRUE', 4);
-INSERT INTO PERSONNE VALUES (SEQ_PERSONNE.NEXTVAL, 'Brown', 'James', 'james.brown@entreprise.com', TO_DATE('01-05-2021', 'DD-MM-YYYY'), 'Employé', 'TRUE', 5);
-INSERT INTO PERSONNE VALUES (SEQ_PERSONNE.NEXTVAL, 'Jones', 'Sophie', 'sophie.jones@entreprise.com', TO_DATE('01-06-2021', 'DD-MM-YYYY'), 'Employé', 'TRUE', 6);
-INSERT INTO PERSONNE VALUES (SEQ_PERSONNE.NEXTVAL, 'Taylor', 'Daniel', 'daniel.taylor@entreprise.com', TO_DATE('01-07-2021', 'DD-MM-YYYY'), 'Employé', 'TRUE', 7);
-INSERT INTO PERSONNE VALUES (SEQ_PERSONNE.NEXTVAL, 'Miller', 'Olivia', 'olivia.miller@entreprise.com', TO_DATE('01-08-2021', 'DD-MM-YYYY'), 'Employé', 'TRUE', 8);
-INSERT INTO PERSONNE VALUES (SEQ_PERSONNE.NEXTVAL, 'Wilson', 'Thomas', 'thomas.wilson@entreprise.com', TO_DATE('01-09-2021', 'DD-MM-YYYY'), 'Employé', 'TRUE', 9);
-INSERT INTO PERSONNE VALUES (SEQ_PERSONNE.NEXTVAL, 'Davis', 'Ava', 'ava.davis@entreprise.com', TO_DATE('01-10-2021', 'DD-MM-YYYY'), 'Employé', 'TRUE', 10);
 
 ------------- tache --------------------------------------------
 INSERT INTO TACHE VALUES(1,'01/06/2023','01/07/2023','12','en cours de execution','tache1',9,10);

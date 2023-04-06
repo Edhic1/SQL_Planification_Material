@@ -1,3 +1,14 @@
+/*****************************************/
+ -- creation d'un utilisateur qui s'applle dev qui va creer les table est les procedure 
+create user dev IDENTIFIED by 1234;
+grant dba to  dev;
+grant create USER to dev;
+GRANT CREATE SESSION To dev WiTH ADMIN OPTION;
+/*******************************************/
+
+
+
+
 /*************************** creation des fontions et porcedure aide ****************/
 
 CREATE OR REPLACE FUNCTION VERIFIERMOTPASSE(
@@ -15,52 +26,36 @@ BEGIN
 END;
 /
 
+/************ permet d'ouvrir le verillage d'un compte *********/
+
 CREATE or REPLACE PROCEDURE unlokuser(name VARCHAR2)
 IS
 BEGIN
 EXECUTE IMMEDIATE 'ALTER USER'|| name||' ACCOUNT UNLOCK';
 END;
 /
-
+/********** permet de genrerer un mot de passe aleatoir ************************/
 CREATE OR REPLACE FUNCTION GENEREMOTPASSE(
     LONGUEUR INT
 ) RETURN VARCHAR2 IS
-    ALPHABET VARCHAR2(60) := 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    ALPHABET VARCHAR2(1000) := 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     RESULTAT VARCHAR2(60):='';
-    TMP      INT;
+    TMP   INT;
 BEGIN
     FOR I IN 1..LONGUEUR LOOP
         TMP:=DBMS_RANDOM.VALUE(1, LENGTH(ALPHABET));
         RESULTAT := RESULTAT
-            || SUBSTR(ALPHABET, TMP, TMP);
+            || SUBSTR(ALPHABET, TMP,1);
     END LOOP;
     RETURN RESULTAT;
 END;
 /
 
+SELECT SUBSTR('Bonjour tout le monde', 8, 4) FROM DUAL;
+SELECT GENEREMOTPASSE(8) FROM DUAL;
 
 
-/************************** creation des PROFILE *********************/
 
-
-/*////////////////// PROFILE POUR LES CHEG ///////////////////////// /*/
-
-CREATE PROFILE PROFILECHEF LIMIT 
-SESSIONS_PER_USER UNLIMITED 
-IDLE_TIME UNLIMITED 
-PASSWORD_LIFE_TIME 20
-PASSWORD_GRACE_TIME 20
-PASSWORD_VERIFY_FUNCTION VERIFIERMOTPASSE;
-
-/*////////////////// PROFILE POUR LES EMPLOYEES /////////////////////// /*/
-
-CREATE PROFILE PROFILEEMP LIMIT 
-SESSIONS_PER_USER 2 
-IDLE_TIME 2 
-PASSWORD_LIFE_TIME 10 
-PASSWORD_GRACE_TIME 7
-FAILED_LOGIN_ATTEMPTS 3
-PASSWORD_VERIFY_FUNCTION VERIFIERMOTPASSE;
 
 /************************** creation des utilisateurs *****************************/
 
@@ -70,9 +65,18 @@ PASSWORD_VERIFY_FUNCTION VERIFIERMOTPASSE;
 
 CREATE TABLE USERPASSWORD(
     IDUS NUMBER(10) PRIMARY KEY,
-    USER VARCHAR2(50),
+    USERe VARCHAR2(50),
     PASSWORD VARCHAR2(50)
 );
+
+create or REPLACE PROCEDURE ajouteruserpass(id int,nom VARCHAR2)
+AS
+tmp VARCHAR2(60);
+BEGIN
+tmp:=GENEREMOTPASSE(8);
+INSERT into USERPASSWORD VALUES(id,nom,tmp);
+END;
+/
 
 CREATE OR REPLACE PROCEDURE CREEUTILISATEUR IS
     CURSOR PERC IS
@@ -117,6 +121,30 @@ END;
 
 
 
+
+/************************** creation des PROFILE *********************/
+
+
+/*////////////////// PROFILE POUR LES CHEG ///////////////////////// /*/
+
+CREATE PROFILE PROFILECHEF LIMIT 
+SESSIONS_PER_USER UNLIMITED 
+IDLE_TIME UNLIMITED 
+PASSWORD_LIFE_TIME 20
+PASSWORD_GRACE_TIME 20
+PASSWORD_VERIFY_FUNCTION VERIFIERMOTPASSE;
+
+/*////////////////// PROFILE POUR LES EMPLOYEES /////////////////////// /*/
+
+CREATE PROFILE PROFILEEMP LIMIT 
+SESSIONS_PER_USER 2 
+IDLE_TIME 2 
+PASSWORD_LIFE_TIME 10 
+PASSWORD_GRACE_TIME 7
+FAILED_LOGIN_ATTEMPTS 3
+PASSWORD_VERIFY_FUNCTION VERIFIERMOTPASSE;
+
+
 /************************** creation de chef *****************************/
 
 CREATE OR REPLACE PROCEDURE CREATE_CHEF_USER(username VARCHAR2, password VARCHAR2) AS
@@ -126,7 +154,7 @@ BEGIN
     EXECUTE IMMEDIATE 'GRANT ROLECHEF TO ' || username;
 END;
 /
-  
+
 
 /************************* creation des roles *************************/
 

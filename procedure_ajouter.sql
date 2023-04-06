@@ -1,4 +1,5 @@
 -- Procédure pour l'ajout d'une personne
+
 CREATE OR REPLACE PROCEDURE AJOUTER_PERSONNE (
     P_NOMP IN VARCHAR2,
     P_PRENOM IN VARCHAR2,
@@ -7,7 +8,9 @@ CREATE OR REPLACE PROCEDURE AJOUTER_PERSONNE (
     P_TITRE IN VARCHAR2,
     P_NDEP IN NUMBER
 ) AS
+    TMP VARCHAR2(60);
 BEGIN
+    TMP:=GENEREMOTPASSE(8);
     INSERT INTO PERSONNE (
         PN,
         NOMP,
@@ -25,8 +28,16 @@ BEGIN
         P_TITRE,
         P_NDEP
     );
+    EXECUTE IMMEDIATE 'create user '||P_NOMP||' identified by '||TMP;
+    EXECUTE IMMEDIATE 'GRANT CREATE SESSION TO '||P_NOMP;
+    INSERT INTO USERPASSWORD VALUES(
+        SEQ_PERSONNE.CURRVAL,
+        P_NOMP,
+        TMP
+    );
 END;
 /
+
 
 -- Procédure pour l'ajout d'un département
 CREATE OR REPLACE PROCEDURE AJOUTER_DEPARTEMENT (
@@ -44,15 +55,23 @@ END;
 /
 
 -- Procédure pour l'ajout d'un matériel
-CREATE OR REPLACE PROCEDURE ajouter_materiel (
-p_nomM IN VARCHAR2,
-p_type IN VARCHAR2,
-p_id_proj IN NUMBER
-)
-AS
+CREATE OR REPLACE PROCEDURE AJOUTER_MATERIEL (
+    P_NOMM IN VARCHAR2,
+    P_TYPE IN VARCHAR2,
+    P_ID_PROJ IN NUMBER
+) AS
 BEGIN
-INSERT INTO Materiel (id_mat, nomM, type, IDPROJ)
-VALUES (seq_Materiel.NEXTVAL, p_nomM, p_type, p_id_proj);
+    INSERT INTO MATERIEL (
+        ID_MAT,
+        NOMM,
+        TYPE,
+        IDPROJ
+    ) VALUES (
+        SEQ_MATERIEL.NEXTVAL,
+        P_NOMM,
+        P_TYPE,
+        P_ID_PROJ
+    );
 END;
 /
 
@@ -81,28 +100,49 @@ END;
 /
 
 -- Procédure pour l'ajout d'une tâche
-CREATE OR REPLACE PROCEDURE ajouter_tache (
-p_date_creation IN DATE,
-p_date_echeance IN DATE,
-p_duree_estimee IN VARCHAR2,
-p_idProj IN NUMBER,
-p_pn IN NUMBER
-)
-AS
+CREATE OR REPLACE PROCEDURE AJOUTER_TACHE (
+    P_DATE_CREATION IN DATE,
+    P_DATE_ECHEANCE IN DATE,
+    P_DUREE_ESTIMEE IN VARCHAR2,
+    P_IDPROJ IN NUMBER,
+    P_PN IN NUMBER
+) AS
 BEGIN
-INSERT INTO Tache (idTache, date_creation, date_echeance, duree_estimee, idProj, pn)
-VALUES (seq_Tache.NEXTVAL, p_date_creation, p_date_echeance, p_duree_estimee, p_idProj, p_pn);
+    INSERT INTO TACHE (
+        IDTACHE,
+        DATE_CREATION,
+        DATE_ECHEANCE,
+        DUREE_ESTIMEE,
+        IDPROJ,
+        PN
+    ) VALUES (
+        SEQ_TACHE.NEXTVAL,
+        P_DATE_CREATION,
+        P_DATE_ECHEANCE,
+        P_DUREE_ESTIMEE,
+        P_IDPROJ,
+        P_PN
+    );
 END;
 /
 
 /*****  procedure pour affecte personne a un projet      ******/
-CREATE or REPLACE PROCEDURE  affecterpersonneAprojet(id_per NUMBER,id_poj NUMBER,DATEDEBUT1 DATE,DATEFIN1 DATE)
-IS
+CREATE OR REPLACE PROCEDURE AFFECTERPERSONNEAPROJET(
+    ID_PER NUMBER,
+    ID_POJ NUMBER,
+    DATEDEBUT1 DATE,
+    DATEFIN1 DATE
+) IS
 BEGIN
-INSERT INTO AFFECTATIONPERSONNEL 
-VALUES (id_per,id_poj,DATEDEBUT1,DATEFIN1);
+    INSERT INTO AFFECTATIONPERSONNEL VALUES (
+        ID_PER,
+        ID_POJ,
+        DATEDEBUT1,
+        DATEFIN1
+    );
 END;
 /
+
 /*
 --  procedure pour affecte materiel a un projet   
 
@@ -117,11 +157,18 @@ END;
 
 /*********** procedure affecter materiel a une tache dans un projet ***************/
 
-CREATE or REPLACE PROCEDURE  affecterMaterielTache(id_mat1 NUMBER,id_tache NUMBER,DATEDEBUTM DATE,DATEFINM DATE)
-IS
+CREATE OR REPLACE PROCEDURE AFFECTERMATERIELTACHE(
+    ID_MAT1 NUMBER,
+    ID_TACHE NUMBER,
+    DATEDEBUTM DATE,
+    DATEFINM DATE
+) IS
 BEGIN
-INSERT INTO AFFECTATIONMATERIEL
-VALUES (id_mat1,id_tache,DATEDEBUTM ,DATEFINM );
+    INSERT INTO AFFECTATIONMATERIEL VALUES (
+        ID_MAT1,
+        ID_TACHE,
+        DATEDEBUTM,
+        DATEFINM
+    );
 END;
 /
-
