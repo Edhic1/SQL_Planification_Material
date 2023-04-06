@@ -52,9 +52,9 @@ CREATE TABLE AFFECTATIONPERSONNEL (
 
 CREATE TABLE TACHE (
     IDTACHE NUMBER(10) PRIMARY KEY,
-    DATE_CREATION DATE DEFAULT SYSDATE NOT NULL,
-    DATE_ECHEANCE DATE, ---- date de fin d'une tache par un employe-------
-    DUREE_ESTIMEE DATE NOT NULL, ------- date final fixe par depart ---------
+    DATE_CREATION TIMESTAMP DEFAULT SYSDATE NOT NULL,
+    DATE_ECHEANCE TIMESTAMP, ---- date de fin d'une tache par un employe-------
+    DUREE_ESTIMEE TIMESTAMP NOT NULL, ------- date final fixe par depart ---------
     ETATT VARCHAR2(50) DEFAULT 'en cours de execution' NOT NULL,
     DECRIPTION VARCHAR2(50),
     IDPROJ NUMBER(10) NOT NULL,
@@ -62,6 +62,9 @@ CREATE TABLE TACHE (
     CONSTRAINT FK_AFFECTATIONPERSONNEL FOREIGN KEY(PN, IDPROJ) REFERENCES AFFECTATIONPERSONNEL(PN, IDPROJ),
     CONSTRAINT CHK_ETATT CHECK (ETATT IN ('en cours de execution', 'terminee', 'non terminee'))
 );
+select SUM(DUREE_ESTIMEE-date_creation)
+ from tache
+ group by pn;
 
 CREATE TABLE AFFECTATIONMATERIEL (
     ID_MAT NUMBER(10) NOT NULL,
@@ -87,7 +90,9 @@ CREATE TABLE CONTIENT (
 
 -- creation sequence pour les clés primaires
 
-CREATE SEQUENCE SEQ_DEPARTEMENT START WITH 1 INCREMENT BY 1 NOMAXVALUE NOCYCLE; /* no cycle est pour pas que la sequence revienne a 1 */ NOCACHE;
+CREATE SEQUENCE SEQ_DEPARTEMENT START WITH 1 INCREMENT BY 1 NOMAXVALUE NOCYCLE;
+
+/* no cycle est pour pas que la sequence revienne a 1 */NOCACHE;
 
 /* no cahe est pour pas que la sequence soit stocker en memoire */
 
