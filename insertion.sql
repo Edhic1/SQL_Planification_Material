@@ -10,14 +10,15 @@ INSERT INTO PERSONNE (PN, NOMP, PRENOM, EMAIL, DATEEMB, TITRE, ETATP, NDEP) VALU
 INSERT INTO PERSONNE (PN, NOMP, PRENOM, EMAIL, DATEEMB, TITRE, ETATP, NDEP) VALUES 
  (SEQ_PERSONNE.NEXTVAL, 'Durand', 'Marie', 'marie.durand@entreprise.com', TO_DATE('01/02/2022', 'DD/MM/YYYY'), 'Assistant Marketing', 'TRUE', 2);
 
+INSERT INTO PROJET (IDPROJ, NOMPROJ, DATEDEB,DATEFIN, DESCRIPTION, PN, ETATPROJ) VALUES 
+(SEQ_PROJET.NEXTVAL, 'Projet 11', TO_DATE('01/01/2023', 'DD/MM/YYYY'),TO_DATE('01/01/2024', 'DD/MM/YYYY'), 'Description Projet 3',6, 'en cours de execution');
 INSERT INTO PROJET (IDPROJ, NOMPROJ, DATEDEB, DESCRIPTION, PN, ETATPROJ) VALUES 
-(SEQ_PROJET.NEXTVAL, 'Projet 3', TO_DATE('01/01/2023', 'DD/MM/YYYY'), 'Description Projet 3',8, 'en cours de execution');
+(SEQ_PROJET.NEXTVAL, 'Projet 12', TO_DATE('01/01/2023', 'DD/MM/YYYY'), 'Description Projet 4',6, 'en cours de execution');
 INSERT INTO PROJET (IDPROJ, NOMPROJ, DATEDEB, DESCRIPTION, PN, ETATPROJ) VALUES 
-(SEQ_PROJET.NEXTVAL, 'Projet 4', TO_DATE('01/01/2023', 'DD/MM/YYYY'), 'Description Projet 4',8, 'en cours de execution');
+(SEQ_PROJET.NEXTVAL, 'Projet 13', TO_DATE('01/01/2023', 'DD/MM/YYYY'), 'Description Projet 5',6, 'en cours de execution');
 INSERT INTO PROJET (IDPROJ, NOMPROJ, DATEDEB, DESCRIPTION, PN, ETATPROJ) VALUES 
-(SEQ_PROJET.NEXTVAL, 'Projet 5', TO_DATE('01/01/2023', 'DD/MM/YYYY'), 'Description Projet 5',8, 'en cours de execution');
-INSERT INTO PROJET (IDPROJ, NOMPROJ, DATEDEB, DESCRIPTION, PN, ETATPROJ) VALUES 
-(SEQ_PROJET.NEXTVAL, 'Projet 6', TO_DATE('01/01/2023', 'DD/MM/YYYY'), 'Description Projet 7',8, 'en cours de execution');
+(SEQ_PROJET.NEXTVAL, 'Projet 14', TO_DATE('01/01/2023', 'DD/MM/YYYY'), 'Description Projet 7',6, 'en cours de execution');
+
 
 
 /************************ insertion pour materiel ***********************************************/
@@ -62,6 +63,25 @@ INSERT INTO PERSONNE VALUES (SEQ_PERSONNE.NEXTVAL, 'Miller', 'Olivia', 'olivia.m
 INSERT INTO PERSONNE VALUES (SEQ_PERSONNE.NEXTVAL, 'Wilson', 'Thomas', 'thomas.wilson@entreprise.com', TO_DATE('01-09-2021', 'DD-MM-YYYY'), 'Employé', 'TRUE', 9);
 INSERT INTO PERSONNE VALUES (SEQ_PERSONNE.NEXTVAL, 'Davis', 'Ava', 'ava.davis@entreprise.com', TO_DATE('01-10-2021', 'DD-MM-YYYY'), 'Employé', 'TRUE', 10);
 
+------------- tache --------------------------------------------
+INSERT INTO TACHE VALUES(1,'01/06/2023','01/07/2023','12','en cours de execution','tache1',9,10);
+INSERT INTO TACHE VALUES(2,'01/06/2023','01/07/2023','30','en cours de execution','tache1',9,9);
+INSERT INTO TACHE VALUES(3,'01/06/2023','15/07/2023','40','en cours de execution','tache1',9,11);
+INSERT INTO TACHE VALUES(4,'01/06/2023','20/07/2023','10','en cours de execution','tache1',9,12);
+INSERT INTO TACHE VALUES(5,'01/06/2023','30/07/2023','5','en cours de execution','tache1',10,9);
+INSERT INTO TACHE VALUES(6,'01/06/2023','16/07/2023','20','en cours de execution','tache1',10,12);
+
+
+------------- affectaionpersonnel -----------------------
+
+INSERT INTO AFFECTATIONPERSONNEL VALUES(9,9,'01/06/2023','01/07/2023');
+INSERT INTO AFFECTATIONPERSONNEL VALUES(9,10,'01/06/2023','30/12/2023');
+INSERT INTO AFFECTATIONPERSONNEL VALUES(9,11,'01/06/2023','15/07/2023');
+INSERT INTO AFFECTATIONPERSONNEL VALUES(9,12,'01/06/2023','20/07/2023');
+INSERT INTO AFFECTATIONPERSONNEL VALUES(9,13,'01/06/2023','19/07/2023');
+INSERT INTO AFFECTATIONPERSONNEL VALUES(10,9,'01/06/2023','30/07/2023');
+INSERT INTO AFFECTATIONPERSONNEL VALUES(10,12,'01/06/2023','16/07/2023');
+
 
 /*************************************** insersion pour personne chef de projet ****************************************************/
 INSERT INTO PERSONNE (PN, NOMP, PRENOM, EMAIL, DATEEMB, TITRE, ETATP, NDEP) VALUES 
@@ -73,3 +93,7 @@ INSERT INTO PERSONNE (PN, NOMP, PRENOM, EMAIL, DATEEMB, TITRE, ETATP, NDEP) VALU
 
 
 /********************************* insersion par procedure *******************************************************/
+
+select pn,sum((DATE_ECHEANCE-DATE_CREATION)-DUREE_ESTIMEE )
+from tache
+GROUP by pn ;

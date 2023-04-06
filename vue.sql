@@ -147,3 +147,7 @@ create or replace view afficherProjet(idProjet,nomProjet,dateDeb,description,che
 as
 SELECT IDPROJ,NOMPROJ,DATEDEB,DESCRIPTION,pr.PN,ETATPROJ from PROJET pr,PERSONNE p
 where pr.pn=p.pn and  UPPER(P.nomp) = USER;
+mali
+
+sqlplus mali/1234@//20.55.44.15:1521/ORCLCDB.localdomain
+Dupont/1234
