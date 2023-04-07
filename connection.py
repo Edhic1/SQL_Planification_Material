@@ -158,7 +158,7 @@ def get_data_proj():
             cursor = conn.cursor()
             cursor.execute('SELECT * FROM PROJET')
             result = cursor.fetchall()
-            print (result)
+            print(result)
             # Transformation des données en format JSON
             data = []
             for row in result:
@@ -170,6 +170,53 @@ def get_data_proj():
                     'PN': row[4],
                     'ETATPROJ': row[5]
                 })
+            return jsonify(data)
+        else:
+            return redirect('/info')
+    else:
+        return 'OK'
+
+
+@app.route('/afficherGraph1', methods=['POST', 'GET'])
+def get_data_graph():
+    if request.method == 'POST':
+        data = request.get_json()
+        array1 = data[0]
+        query = data[0]['query']
+        session_id = array1['session_id'].encode('utf-8')
+
+        if session_id and session_id == app.config["SESSION_ORACLE"].get('session_id'):
+            connval = app.config["SESSION_ORACLE"]
+            print('ok')
+            # conn = cx_Oracle.connect(
+            #   user=connval.get('username'), password=connval.get('password'), dsn=connval.get('dsn'))
+            conn = cx_Oracle.connect(
+                connval.get('username') + '/' + connval.get('password') + '@localhost:1521/XEPDB1')
+
+            if not conn:
+                return redirect(url_for('info'))
+
+            if query == 'difference':
+                cursor = conn.cursor()
+                cursor.execute('select * from dev.afficherdiffrenceEntredate')
+                result = cursor.fetchall()
+            elif query == 'score':
+                cursor = conn.cursor()
+                cursor.execute('select * from dev.afficherScore')
+                result = cursor.fetchall()
+            else:
+                return 'Invalid query'
+
+            print(result)
+
+            # Transformation des données en format JSON
+            data = []
+            for row in result:
+                data.append({
+                    'nomemp': row[0],
+                    'score': row[1]
+                })
+
             return jsonify(data)
         else:
             return redirect('/info')

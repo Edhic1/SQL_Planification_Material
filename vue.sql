@@ -76,7 +76,7 @@ CREATE OR REPLACE VIEW AFFICHETTACHECHEF(
                 )
         );
 
-/********************** cette vue permet au chef de projet de voir tout les personne qui appatient a ce projet *********************************/
+/********************** cette vue permet au chef de projet de voir tout les personne qui appatient a ces projet *********************************/
 
 CREATE OR REPLACE VIEW AFFICHERPERPROJ(
     PN,
@@ -98,18 +98,12 @@ CREATE OR REPLACE VIEW AFFICHERPERPROJ(
     FROM
         PERSONNE             P,
         AFFECTATIONPERSONNEL AF,
-        PROJET               PR,
-        DEPARTEMENT          D
+        PROJET               PR
     WHERE
         P.PN=AF.PN
         AND PR.IDPROJ=AF.IDPROJ
-        AND P.NDEP=D.NDEP
-        AND PR.PN=(
-            SELECT
-                USER
-            FROM
-                DUAL
-        );
+        AND PR.PN=(select pn from personne WHERE UPPER(nomp)=user)
+    group BY P.PN,NOMP,PRENOM,EMAIL,DATEEMB,TITRE,ETATP;
 
 /*********************************** cette vue permet d'afficher le materiel qui appartient au projet de chef actuelle *******************/
 
@@ -153,21 +147,21 @@ where pr.pn=p.pn and  UPPER(P.nomp) = USER;
 
 create or replace VIEW afficherdiffrenceEntredate(idemp,diffrence)
 as
-SELECT t.pn, SUM((EXTRACT(DAY FROM (DATE_ECHEANCE-DUREE_ESTIMEE))*86400
+SELECT aff.NOMP, SUM((EXTRACT(DAY FROM (DATE_ECHEANCE-DUREE_ESTIMEE))*86400
 +EXTRACT(DAY FROM (DATE_ECHEANCE-DUREE_ESTIMEE))*3600
 +EXTRACT(DAY FROM (DATE_ECHEANCE-DUREE_ESTIMEE))*60)/(60*60*24))
-FROM TACHE t,personne p,projet pr
-where pr.IDPROJ=t.IDPROJ and pr.pn=p.pn and UPPER(p.nomp)=user
-GROUP BY t.PN;
+FROM TACHE t,personne p,projet pr,AFFICHERPERPROJ aff
+where pr.IDPROJ=t.IDPROJ and pr.pn=p.pn and aff.pn=t.pn and UPPER(p.nomp)=user
+GROUP BY aff.nomp;
 
 ----------------------- une view permet de calculer le score total des tache pour un employee  ------------------
 
-create or replace VIEW afficherScore(idemp,Score)
+create or replace VIEW afficherScore(nomemp,Score)
 as
-SELECT t.pn,sum(t.score)
-FROM TACHE t,personne p,projet pr
-where pr.IDPROJ=t.IDPROJ and pr.pn=p.pn and UPPER(p.nomp)=user
-GROUP BY t.PN;
+SELECT aff.NOMP,sum(t.score)
+FROM TACHE t,personne p,projet pr,AFFICHERPERPROJ aff
+where pr.IDPROJ=t.IDPROJ and pr.pn=p.pn and aff.pn=t.pn and UPPER(p.nomp)=user
+GROUP BY aff.NOMP;
 
 
 --pour mali mali
