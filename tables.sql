@@ -57,15 +57,18 @@ CREATE TABLE TACHE (
     DUREE_ESTIMEE TIMESTAMP NOT NULL, ------- date final fixe par depart ---------
     ETATT VARCHAR2(50) DEFAULT 'en cours de execution' NOT NULL,
     DECRIPTION VARCHAR2(50),
+    SCORE INT, --------- ce champ permet a un chef de projet de evaluer le travaille d'un enmploye
     IDPROJ NUMBER(10) NOT NULL,
     PN NUMBER(10) NOT NULL,
     CONSTRAINT FK_AFFECTATIONPERSONNEL FOREIGN KEY(PN, IDPROJ) REFERENCES AFFECTATIONPERSONNEL(PN, IDPROJ),
     CONSTRAINT CHK_ETATT CHECK (ETATT IN ('en cours de execution', 'terminee', 'non terminee'))
 );
+
+/*
 select SUM(DUREE_ESTIMEE-date_creation)
  from tache
  group by pn;
-
+*/
 CREATE TABLE AFFECTATIONMATERIEL (
     ID_MAT NUMBER(10) NOT NULL,
     IDTACHE NUMBER(10) NOT NULL,

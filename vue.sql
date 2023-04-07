@@ -147,6 +147,31 @@ create or replace view afficherProjet(idProjet,nomProjet,dateDeb,description,che
 as
 SELECT IDPROJ,NOMPROJ,DATEDEB,DESCRIPTION,pr.PN,ETATPROJ from PROJET pr,PERSONNE p
 where pr.pn=p.pn and  UPPER(P.nomp) = USER;
+
+
+-----------------------------------------
+/*
+SELECT SUM(EXTRACT(DAY FROM (DATE_ECHEANCE-DUREE_ESTIMEE)) * 86400 
+           + EXTRACT(HOUR FROM (DUREE_ESTIMEE - DATE_CREATION)) * 3600 
+           + EXTRACT(MINUTE FROM (DUREE_ESTIMEE - DATE_CREATION)) * 60 
+           + EXTRACT(SECOND FROM (DUREE_ESTIMEE - DATE_CREATION))) difference
+FROM TACHE t,personne p
+where t.pn=p.pn
+GROUP BY PN;
+*/
+create or replace VIEW  (idemp,diffrence)
+SELECT t.pn, SUM((EXTRACT(DAY FROM (DATE_ECHEANCE-DUREE_ESTIMEE))*86400
++EXTRACT(DAY FROM (DATE_ECHEANCE-DUREE_ESTIMEE))*3600
++EXTRACT(DAY FROM (DATE_ECHEANCE-DUREE_ESTIMEE))*60)/(60*60*24))  difference
+FROM TACHE t,personne p
+where t.pn=p.pn --and p.nomp=user 
+GROUP BY t.PN;
+
+SELECT SUM(EXTRACT(DAY FROM (DATE_ECHEANCE-DUREE_ESTIMEE))*86400+EXTRACT(DAY FROM (DATE_ECHEANCE-DUREE_ESTIMEE))*3600+EXTRACT(DAY FROM (DATE_ECHEANCE-DUREE_ESTIMEE))*60 ) difference
+FROM TACHE
+GROUP BY PN;
+
+
 mali
 
 sqlplus mali/1234@//20.55.44.15:1521/ORCLCDB.localdomain
