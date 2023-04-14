@@ -106,7 +106,7 @@ CREATE OR REPLACE VIEW AFFICHERPERPROJ(
     group BY P.PN,NOMP,PRENOM,EMAIL,DATEEMB,TITRE,ETATP;
 
 /*********************************** cette vue permet d'afficher le materiel qui appartient au projet de chef actuelle *******************/
-
+--- THIS NEED TO BE CHANGED
 CREATE OR REPLACE VIEW AFFICHERMATPROJ(
     NOMM,
     TYPEM,
@@ -122,7 +122,6 @@ CREATE OR REPLACE VIEW AFFICHERMATPROJ(
         ETATM
     FROM
         PROJET   PR,
-        CONTIENT C,
         MATERIEL M
     WHERE
         PR.IDPROJ=C.IDPROJ

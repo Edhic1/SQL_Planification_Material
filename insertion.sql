@@ -14,10 +14,13 @@ call AJOUTER_DEPARTEMENT('Logistique');
 call AJOUTER_DEPARTEMENT('Production');
 call AJOUTER_DEPARTEMENT('Recherche et développement');
 
+-- here is for commit ajouter
+commit;
+
 ---------------------- insersion personne -----------------------------------------
 -- pour appler cette prcedure vous devez cree un table userpassword , et donner au dev les pivilege create user et create session
 
-call AJOUTER_PERSONNE('Dupont', 'Jean', 'jean.dupont@entreprise.com','09/05/2022', 'Ingénieur',1);
+call AJOUTER_PERSONNE('Dupont', 'Jean', 'jean.dupont@entreprise.com', TO_DATE('09/05/2022', 'DD/MM/YYYY'), 'Ingénieur',1);
 call AJOUTER_PERSONNE('Durand', 'Marie', 'marie.durand@entreprise.com','01/02/2020', 'Assistant Marketing',2);
 call AJOUTER_PERSONNE('Mali', 'Dronyo', 'mali.dronyo@entreprise.com','01/01/2021', 'Ingénieur',2);
 call AJOUTER_PERSONNE( 'Durand', 'Marie', 'marie.durand@entreprise.com','01/02/2022', 'Assistant Marketing', 2);
@@ -27,6 +30,8 @@ call AJOUTER_PERSONNE('Johnson', 'Michael', 'michael.johnson@entreprise.com','01
 call AJOUTER_PERSONNE( 'Williams', 'Emily', 'emily.williams@entreprise.com','01-04-2021', 'Employé', 4);
 call AJOUTER_PERSONNE( 'Brown', 'James', 'james.brown@entreprise.com','01-05-2021', 'Employé', 'TRUE', 5);
 
+-- here is for commit ajouter
+commit;
 
 
 ------------- personne --------------
