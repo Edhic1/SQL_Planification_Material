@@ -1,24 +1,20 @@
 DROP FUNCTION GENEREMOTPASSE;
 
-
-
-
 -- Procédure pour l'ajout d'une personne
 CREATE OR REPLACE FUNCTION GENEREMOTPASSE(
     P_LONGUEUR IN NUMBER
 ) RETURN VARCHAR2 AS
-    TMP VARCHAR2(60);
+    TMP   VARCHAR2(60);
     CHARS VARCHAR2(60) := 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    I NUMBER;
+    I     NUMBER;
 BEGIN
     FOR I IN 1..P_LONGUEUR LOOP
-        TMP := TMP || SUBSTR(CHARS, FLOOR(DBMS_RANDOM.VALUE(1, LENGTH(CHARS))) + 1, 1);
+        TMP := TMP
+            || SUBSTR(CHARS, FLOOR(DBMS_RANDOM.VALUE(1, LENGTH(CHARS))) + 1, 1);
     END LOOP;
     RETURN TMP;
 END;
 /
-
-
 
 CREATE OR REPLACE PROCEDURE AJOUTER_PERSONNE (
     P_NOMP IN VARCHAR2,
@@ -48,8 +44,12 @@ BEGIN
         P_TITRE,
         P_NDEP
     );
-    EXECUTE IMMEDIATE 'create user '||P_NOMP||' identified by '||TMP;
-    EXECUTE IMMEDIATE 'GRANT CREATE SESSION TO '||P_NOMP;
+    EXECUTE IMMEDIATE 'create user '
+        ||P_NOMP
+        ||' identified by '
+        ||TMP;
+    EXECUTE IMMEDIATE 'GRANT CREATE SESSION TO '
+        ||P_NOMP;
     INSERT INTO USERPASSWORD VALUES(
         SEQ_PERSONNE.CURRVAL,
         P_NOMP,
@@ -57,7 +57,6 @@ BEGIN
     );
 END;
 /
-
 
 -- Procédure pour l'ajout d'un département
 CREATE OR REPLACE PROCEDURE AJOUTER_DEPARTEMENT (
@@ -143,9 +142,11 @@ BEGIN
     );
 END;
 /
+
+/*
 INSERT INTO TACHE
 VALUES (SEQ_TACHE.NEXTVAL,, TO_TIMESTAMP('2023-04-08 18:00:00', 'YYYY-MM-DD HH24:MI:SS'), TO_TIMESTAMP('2023-04-09 17:00:00', 'YYYY-MM-DD HH24:MI:SS'), 'en cours de execution', 'Effectuer la maintenance du système',1,7);
-
+*/
 /*****  procedure pour affecte personne a un projet      ******/
 CREATE OR REPLACE PROCEDURE AFFECTERPERSONNEAPROJET(
     ID_PER NUMBER,
