@@ -23,58 +23,41 @@ CREATE OR REPLACE VIEW CONSULETTACHEEMP(
     WHERE
         T.IDTACHE=A.IDTACHE
         AND A.ID_MAT=M.ID_MAT
-        AND T.PN=(
-            SELECT
-                USER
-            FROM
-                DUAL
-        );
+        AND T.PN=(select pn from personne where nomp=USER);
 
-/****************************  cette vue permet au chef de projet de voir le tache affecter a chaque personne dans un PROJECT   *****************************************/
-CREATE OR REPLACE VIEW AFFICHETTACHECHEF(
-    PN,
+/****************************  cette vue permet au chef de projet de voir la tache affecter a chaque personne dans un PROJECT   *****************************************/
+CREATE OR REPLACE VIEW AFFICHERTACHEPROJETCHEF(
+    IDTACHE,
     DATE_CREATION,
     DATE_ECHEANCE,
     DUREE_ESTIMEE,
     ETATT,
     DECRIPTION,
-    NOMM
-) AS
+    SCORE,
+    IDPROJ,
+    NOMEMP
+)AS
     SELECT
-        P.PN,
-        DATE_CREATION,
-        DATE_ECHEANCE,
-        DUREE_ESTIMEE,
-        ETATT,
-        DECRIPTION,
-        M.NOMM
+        T.IDTACHE,
+        T.DATE_CREATION,
+        T.DATE_ECHEANCE,
+        T.DUREE_ESTIMEE,
+        T.ETATT,
+        T.DECRIPTION,
+        T.SCORE,
+        T.IDPROJ,
+        P.NOMP
     FROM
         TACHE                T,
-        AFFECTATIONMATERIEL  A,
-        MATERIEL             M,
         PROJET               PR,
-        AFFECTATIONPERSONNEL AFP,
-        PERSONNE             P
+        PERSONNE             P,
+        AFFECTATIONPERSONNEL AFF
     WHERE
-        T.IDTACHE=A.IDTACHE
-        AND A.ID_MAT=M.ID_MAT
-        AND T.IDPROJ=AFP.IDPROJ
-        AND T.PN=AFP.PN
-        AND AFP.IDPROJ=PR.IDPROJ
-        AND AFP.PN=P.PN
-        AND PR.PN=(
-            SELECT
-                PN
-            FROM
-                PERSONNE
-            WHERE
-                NOMP =(
-                    SELECT
-                        USER
-                    FROM
-                        DUAL
-                )
-        );
+        P.PN=AFF.PN
+        AND PR.IDPROJ=AFF.IDPROJ
+        AND T.PN=AFF.PN
+        AND T.IDPROJ=AFF.IDPROJ
+        and pr.PN=(select pn from personne where UPPER(NOMP)=USER);
 
 /********************** cette vue permet au chef de projet de voir tout les personne qui appatient a ces projet *********************************/
 
@@ -136,9 +119,9 @@ CREATE OR REPLACE VIEW AFFICHERMATPROJ(
 
 /*********** cette view permet d'afficher tout les projet pour le chef de projet actuellement connecter a cette session             *********************/
 
-create or replace view afficherProjet(idProjet,nomProjet,dateDeb,description,chefProjet,etatProjet)
+create or replace view afficherProjet(idProjet,nomProjet,dateDeb,DATEFIN,description,chefProjet,etatProjet)
 as
-SELECT IDPROJ,NOMPROJ,DATEDEB,DESCRIPTION,pr.PN,ETATPROJ from PROJET pr,PERSONNE p
+SELECT IDPROJ,NOMPROJ,DATEDEB,DATEFIN,DESCRIPTION,pr.PN,ETATPROJ from PROJET pr,PERSONNE p
 where pr.pn=p.pn and  UPPER(P.nomp) = USER;
 
 
