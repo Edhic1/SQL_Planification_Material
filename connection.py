@@ -86,6 +86,9 @@ def index():
             # si la connexion est réussie, retourner une réponse 200 OK
 
             # session_id = session.sid
+            
+            
+            
             sev = ses.decode('utf-8')
             return jsonify({'session_id': sev}), 200
 

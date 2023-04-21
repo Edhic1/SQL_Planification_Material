@@ -194,4 +194,21 @@ BEGIN
 END;
 /
 
--- procedure pour i
+------------------------------- fonction permet de verifier si l'utilisateur est un chef ou non------------------
+
+CREATE OR REPLACE FUNCTION FUNCISCHEF RETURN INTEGER IS
+    VAR INTEGER;
+BEGIN
+    SELECT
+        ISCHEF INTO VAR
+    FROM
+        PERSONNE
+    WHERE
+        UPPER(NOMP) = USER;
+    IF VAR = 1 THEN
+        RETURN 1;
+    ELSE
+        RETURN 0;
+    END IF;
+END;
+/

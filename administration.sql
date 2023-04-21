@@ -4,6 +4,10 @@ create user dev IDENTIFIED by 1234;
 grant dba to  dev;
 grant create USER to dev;
 GRANT CREATE SESSION To dev WiTH ADMIN OPTION;
+
+/********* creation des chef de projet *******************/
+UPDATE personne SET ISCHEF=1 WHERE NOMP='mali';
+UPDATE personne SET ISCHEF=1 WHERE NOMP='Doe';
 /*******************************************/
 /****** pour le serveur ******/
 grant create USER to super;
