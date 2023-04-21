@@ -87,10 +87,17 @@ def index():
 
             # session_id = session.sid
             
-            
-            
+            # fonction de verification si l'utilisateur est un chef ou non
+
+            cursor = conn.cursor()
+            cursor.execute("SELECT dev.FUNCISCHEF() FROM dual")
+            result = cursor.fetchone()[0]
+            print(result)
+            # Fermer le curseur et la connexion
+            # cursor.close()
+        
             sev = ses.decode('utf-8')
-            return jsonify({'session_id': sev}), 200
+            return jsonify({'session_id': sev,"ischef": result}), 200
 
         except cx_Oracle.DatabaseError as e:
             # si la connexion est échouée, retourner une réponse 401 Unauthorized
