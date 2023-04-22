@@ -4,10 +4,17 @@ create user dev IDENTIFIED by 1234;
 grant dba to  dev;
 grant create USER to dev;
 GRANT CREATE SESSION To dev WiTH ADMIN OPTION;
+
+/********* creation des chef de projet *******************/
+UPDATE personne SET ISCHEF=1 WHERE NOMP='mali';
+UPDATE personne SET ISCHEF=1 WHERE NOMP='Doe';
 /*******************************************/
+/****** pour le serveur ******/
+grant create USER to super;
+GRANT CREATE SESSION To super WiTH ADMIN OPTION;
 
 
-
+drop FUNCTION VERIFIERMOTPASSE;
 
 /*************************** creation des fontions et porcedure aide ****************/
 
@@ -63,11 +70,6 @@ SELECT GENEREMOTPASSE(8) FROM DUAL;
 
 /** CREATE SEQUENCE SEQP START WITH 1 INCREMENT BY 1; **/
 
-CREATE TABLE USERPASSWORD(
-    IDUS NUMBER(10) PRIMARY KEY,
-    USERe VARCHAR2(50),
-    PASSWORD VARCHAR2(50)
-);
 
 create or REPLACE PROCEDURE ajouteruserpass(id int,nom VARCHAR2)
 AS
@@ -127,10 +129,12 @@ END;
 
 /*////////////////// PROFILE POUR LES CHEG ///////////////////////// /*/
 
-CREATE PROFILE PROFILECHEF LIMIT 
+alter session set "_ORACLE_SCRIPT"=TRUE;
+
+CREATE PROFILE PROFILECHEF2 LIMIT 
 SESSIONS_PER_USER UNLIMITED 
 IDLE_TIME UNLIMITED 
-PASSWORD_LIFE_TIME 20
+PASSWORD_LIFE_TIME 80
 PASSWORD_GRACE_TIME 20
 PASSWORD_VERIFY_FUNCTION VERIFIERMOTPASSE;
 

@@ -5,7 +5,9 @@ i use gunicorn for production deployment WSGI server
 
 for run it do : gunicorn app:app -c gunicorn_config.py
 
+gunicorn connection4:connection4 -c gunicorn_config.py 
 """
 
 bind = '127.0.0.1:8000'  # Replace with the IP address and port number you want to use
-workers = 4  # Replace with the number of worker processes you want to use (4 is a good default)
+# Replace with the number of worker processes you want to use (4 is a good default)
+workers = 4

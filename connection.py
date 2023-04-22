@@ -86,8 +86,18 @@ def index():
             # si la connexion est réussie, retourner une réponse 200 OK
 
             # session_id = session.sid
+            
+            # fonction de verification si l'utilisateur est un chef ou non
+
+            cursor = conn.cursor()
+            cursor.execute("SELECT dev.FUNCISCHEF() FROM dual")
+            result = cursor.fetchone()[0]
+            print(result)
+            # Fermer le curseur et la connexion
+            # cursor.close()
+        
             sev = ses.decode('utf-8')
-            return jsonify({'session_id': sev}), 200
+            return jsonify({'session_id': sev,"ischef": result}), 200
 
         except cx_Oracle.DatabaseError as e:
             # si la connexion est échouée, retourner une réponse 401 Unauthorized
@@ -175,6 +185,60 @@ def get_data_proj():
             return redirect('/info')
     else:
         return 'OK'
+
+@app.route("/affichertachechef", methods=["POST", "GET"])
+def get_task_poject():
+    if request.method == "POST":
+        data = request.get_json()
+        array1 = data[0]
+        session_id = array1["session_id"].encode("utf-8")
+        id_projet2 = array1["idproj"]
+
+        if session_id and session_id == app.config["SESSION_ORACLE"].get("session_id"):
+            connval = app.config["SESSION_ORACLE"]
+            print("ok")
+            # conn = cx_Oracle.connect(
+            #   user=connval.get('username'), password=connval.get('password'), dsn=connval.get('dsn'))
+            conn = cx_Oracle.connect(
+                connval.get("username")
+                + "/"
+                + connval.get("password")
+                + "@localhost:1521/XEPDB1"
+            )
+            if not conn:
+                return redirect(url_for("info"))
+            print(id_projet2)
+            # id_projet2 = 1
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT * FROM dev.AFFICHERTACHEPROJETCHEF WHERE IDPROJ = :id_projet",
+                {"id_projet": id_projet2},
+            )
+
+            result = cursor.fetchall()
+
+            # Transformation des données en format JSON
+            data = []
+            for row in result:
+                data.append(
+                    {
+                        "IDTACHE": row[0],
+                        "DATE_CREATION": row[1],
+                        "DATE_ECHEANCE": row[2],
+                        "DUREE_ESTIMEE": row[3],
+                        "ETATT": row[4],
+                        "DECRIPTION": row[5],
+                        "SCORE": row[6],
+                        "IDPROJ": row[7],
+                        "NOMEMP": row[8],
+                    }
+                )
+            print(data)
+            return jsonify(data)
+        else:
+            return redirect("/info")
+    else:
+        return "OK"
 
 
 @app.route('/afficherGraph1', methods=['POST', 'GET'])
