@@ -118,8 +118,7 @@ def get_data_mat():
             # Retrieve the session variables
             connval = session.get('oracle')
 
-            conn = cx_Oracle.connect(
-                user=connval['username'], password=connval['password'], dsn=connval['dsn'])
+            conn = cx_Oracle.connect(user=connval['username'], password=connval['password'], dsn=connval['dsn'])
             if not conn:
                 return redirect(url_for('info'))
 
@@ -341,6 +340,54 @@ def test():
         return 'ok'
 
 
+
+@app.route('/getTaches',methods=['POST', 'GET'])
+def get_taches():
+    # establish a connection to the database
+
+    if request.method == 'POST':
+        data = request.get_json()
+        username = data['username']
+        password = data['password']
+
+        try:
+            conn = cx_Oracle.connect(user=username, password=password, dsn=dsn)
+
+
+            cursor = conn.cursor()
+
+            # execute a SELECT statement to retrieve tasks from the TACHE table
+            cursor.execute('SELECT * FROM TACHE')
+
+            # create a list of tasks from the query results
+            tasks = []
+            for row in cursor:
+                task = {
+                    'id': row[0],
+                    'date_creation': str(row[1]),
+                    'date_echeance': str(row[2]),
+                    'duree_estimee': str(row[3]),
+                    'etat': row[4],
+                    'description': row[5],
+                    'score': row[6],
+                    'id_projet': row[7],
+                    'pn': row[8]
+                }
+                tasks.append(task)
+
+            # close the cursor and the database connection
+            cursor.close()
+            conn.close()
+
+            # return the list of tasks as a JSON response
+            return jsonify({'status': 'success', 'taches': tasks})
+        except cx_Oracle.DatabaseError as e:
+            return jsonify({'status': 'error', 'message': 'Database error: ' + str(e)})
+    else:
+        return 'OK'
+
+
+
 @app.route('/deconnection', methods=['POST', 'GET'])
 def decon():
     if request.method == 'POST':
@@ -353,6 +400,7 @@ def decon():
             return jsonify({'session id': 'session id not found'}), 401
     else:
         return 'OK'
+    
 
 
 if __name__ == '__main__':
