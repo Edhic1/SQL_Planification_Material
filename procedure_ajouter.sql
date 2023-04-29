@@ -212,3 +212,20 @@ BEGIN
     END IF;
 END;
 /
+
+
+/*************** procedure permet de mettre a jour les inforamtion d'une tache **************************/
+
+CREATE OR REPLACE PROCEDURE rateTache(id_tache INT, scoreval INT) IS
+  v_date_echeance TIMESTAMP;
+  v_DUREE_ESTIMEE TIMESTAMP;
+BEGIN
+  UPDATE tache SET SCORE = scoreval, DATE_ECHEANCE = SYSDATE WHERE IDTACHE = id_tache;
+  SELECT DATE_ECHEANCE,DUREE_ESTIMEE INTO v_date_echeance,v_DUREE_ESTIMEE FROM tache WHERE IDTACHE = id_tache;
+  IF v_date_echeance > v_DUREE_ESTIMEE THEN
+    UPDATE tache SET ETATT = 'non terminee' WHERE IDTACHE = id_tache;
+  ELSE
+    UPDATE tache SET ETATT = 'terminee' WHERE IDTACHE = id_tache;
+  END IF; 
+END;
+/

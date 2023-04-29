@@ -40,6 +40,7 @@ CREATE OR REPLACE VIEW AFFICHERTACHEPROJETCHEF(
     DECRIPTION,
     SCORE,
     IDPROJ,
+    NOMPROJ,
     NOMEMP
 )AS
     SELECT
@@ -51,6 +52,7 @@ CREATE OR REPLACE VIEW AFFICHERTACHEPROJETCHEF(
         T.DECRIPTION,
         T.SCORE,
         T.IDPROJ,
+        PR.NOMPROJ,
         P.NOMP
     FROM
         TACHE                T,
@@ -71,9 +73,50 @@ CREATE OR REPLACE VIEW AFFICHERTACHEPROJETCHEF(
                 UPPER(NOMP)=USER
         );
 
-/********************** cette vue permet au chef de projet de voir tout les personne qui appatient a ces projet *********************************/
+/*********************** cette vue permet d'afficher les taches pour l'employer *******************************/
+CREATE OR REPLACE VIEW AFFICHERTACHEEMP(
+    IDTACHE,
+    DATE_CREATION,
+    DATE_ECHEANCE,
+    DUREE_ESTIMEE,
+    ETATT,
+    DECRIPTION,
+    SCORE,
+    IDPROJ,
+    NOMPROJ,
+    NOMEMP
+) AS
+    SELECT
+        T.IDTACHE,
+        T.DATE_CREATION,
+        T.DATE_ECHEANCE,
+        T.DUREE_ESTIMEE,
+        T.ETATT,
+        T.DECRIPTION,
+        T.SCORE,
+        T.IDPROJ,
+        PR.NOMPROJ,
+        P.NOMP
+    FROM
+        TACHE                T,
+        PROJET               PR,
+        PERSONNE             P,
+        AFFECTATIONPERSONNEL AFF
+    WHERE
+        P.PN=AFF.PN
+        AND PR.IDPROJ=AFF.IDPROJ
+        AND T.PN=AFF.PN
+        AND T.IDPROJ=AFF.IDPROJ
+        AND T.PN=(
+            SELECT
+                PN
+            FROM
+                PERSONNE
+            WHERE
+                UPPER(NOMP)=USER
+        );
 
-CREATE OR REPLACE VIEW AFFICHERPERPROJ(
+/********************** cette vue permet au chef de projet de voir tout les personne qui appatient a ces projet *********************************/CREATE OR REPLACE VIEW AFFICHERPERPROJ(
     PN,
     NOMP,
     PRENOM,
