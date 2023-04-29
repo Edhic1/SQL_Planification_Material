@@ -387,6 +387,41 @@ def get_taches():
         return 'OK'
 
 
+@app.route("/ratetache", methods=["POST", "GET"])
+def ratetache():
+    if request.method == "POST":
+        data = request.get_json()
+        session_id = data["session_id"].encode("utf-8")
+        id_tache = data["id_tache"]
+        scoreval = data["scoreval"]
+
+        if session_id and session_id == app.config["SESSION_ORACLE"].get("session_id"):
+            connval = app.config["SESSION_ORACLE"]
+            print("ok")
+            # conn = cx_Oracle.connect(
+            #   user=connval.get('username'), password=connval.get('password'), dsn=connval.get('dsn'))
+            conn = cx_Oracle.connect(
+                connval.get("username")
+                + "/"
+                + connval.get("password")
+                + "@localhost:1521/XEPDB1"
+            )
+
+            if not conn:
+                return redirect(url_for("info"))
+
+            cursor = conn.cursor()
+            cursor.callproc("dev.rateTache", [id_tache, scoreval])
+
+            # enregistrer les changements dans la base de données
+            conn.commit()
+            return jsonify({"etat": "ok"}), 200
+        else:
+            return redirect("/info")
+    else:
+        return "OK"
+
+
 
 @app.route('/deconnection', methods=['POST', 'GET'])
 def decon():
