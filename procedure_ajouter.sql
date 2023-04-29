@@ -121,24 +121,24 @@ END;
 
 -- Procédure pour l'ajout d'une tâche
 CREATE OR REPLACE PROCEDURE AJOUTER_TACHE (
-    P_DATE_CREATION IN TIMESTAMP,
     P_DUREE_ESTIMEE IN TIMESTAMP,
     P_IDPROJ IN NUMBER,
-    P_PN IN NUMBER
+    P_PN IN NUMBER,
+    VAL_DESCRIPTION VARCHAR2
 ) AS
 BEGIN
     INSERT INTO TACHE (
         IDTACHE,
-        DATE_CREATION,
         DUREE_ESTIMEE,
         IDPROJ,
-        PN
+        PN,
+        DECRIPTION
     ) VALUES (
         SEQ_TACHE.NEXTVAL,
-        P_DATE_CREATION,
         P_DUREE_ESTIMEE,
         P_IDPROJ,
-        P_PN
+        P_PN,
+        VAL_DESCRIPTION
     );
 END;
 /
@@ -213,19 +213,41 @@ BEGIN
 END;
 /
 
-
 /*************** procedure permet de mettre a jour les inforamtion d'une tache **************************/
 
-CREATE OR REPLACE PROCEDURE rateTache(id_tache INT, scoreval INT) IS
-  v_date_echeance TIMESTAMP;
-  v_DUREE_ESTIMEE TIMESTAMP;
+CREATE OR REPLACE PROCEDURE RATETACHE(
+    ID_TACHE INT,
+    SCOREVAL INT
+) IS
+    V_DATE_ECHEANCE TIMESTAMP;
+    V_DUREE_ESTIMEE TIMESTAMP;
 BEGIN
-  UPDATE tache SET SCORE = scoreval, DATE_ECHEANCE = SYSDATE WHERE IDTACHE = id_tache;
-  SELECT DATE_ECHEANCE,DUREE_ESTIMEE INTO v_date_echeance,v_DUREE_ESTIMEE FROM tache WHERE IDTACHE = id_tache;
-  IF v_date_echeance > v_DUREE_ESTIMEE THEN
-    UPDATE tache SET ETATT = 'non terminee' WHERE IDTACHE = id_tache;
-  ELSE
-    UPDATE tache SET ETATT = 'terminee' WHERE IDTACHE = id_tache;
-  END IF; 
+    UPDATE TACHE
+    SET
+        SCORE = SCOREVAL,
+        DATE_ECHEANCE = SYSDATE
+    WHERE
+        IDTACHE = ID_TACHE;
+    SELECT
+        DATE_ECHEANCE,
+        DUREE_ESTIMEE INTO V_DATE_ECHEANCE,
+        V_DUREE_ESTIMEE
+    FROM
+        TACHE
+    WHERE
+        IDTACHE = ID_TACHE;
+    IF V_DATE_ECHEANCE > V_DUREE_ESTIMEE THEN
+        UPDATE TACHE
+        SET
+            ETATT = 'non terminee'
+        WHERE
+            IDTACHE = ID_TACHE;
+    ELSE
+        UPDATE TACHE
+        SET
+            ETATT = 'terminee'
+        WHERE
+            IDTACHE = ID_TACHE;
+    END IF;
 END;
 /
