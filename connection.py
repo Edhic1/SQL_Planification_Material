@@ -621,7 +621,7 @@ def afficheMateriel():
         return 'OK'    
 
 
-@app.route('/getTaches',methods=['POST','GET'])
+@app.route('/getTachesdate',methods=['POST','GET'])
 def getTaches():
     if request.method == 'POST':
         data = request.get_json()
