@@ -472,8 +472,8 @@ def ajouterTache():
             projet = cursor.fetchone()[0] # get first element of the result
             # make dateEstimation (String) to TIMESTAMP
 
-            date_obj = datetime.strptime(dateEstimation, "%d/%m/%Y %H:%M")
-            cursor.callproc('super.AJOUTER_TACHE', [nomtache,date_obj,projet,PN,description])
+            #date_obj = datetime.strptime(dateEstimation, "%d/%m/%Y %H:%M")
+            cursor.callproc('super.AJOUTER_TACHE2', [nomtache,dateEstimation,projet,PN,description])
             conn.commit()
             # ajouter CREATE OR REPLACE PROCEDURE AFFECTERPERSONNEAPROJET(
             #   ID_PER NUMBER,
