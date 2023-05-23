@@ -620,6 +620,46 @@ def afficheMateriel():
     else:
         return 'OK'    
 
+
+@app.route('/getTaches',methods=['POST','GET'])
+def getTaches():
+    if request.method == 'POST':
+        data = request.get_json()
+        username = data['username']
+        password = data['password']
+
+        try:
+            conn = cx_Oracle.connect(user=username, password=password, dsn=dsn)
+            cursor = conn.cursor()
+            # get id personne 
+            cursor.execute('SELECT PN FROM PERSONNE WHERE PN = ' + username)
+            PN =   cursor.fetchone()[0]  # get first element of the result
+            cursor.execute("SELECT * FROM TACHE WHERE PN = " + PN)
+            result = cursor.fetchall()
+            # Transformation des données en format JSON
+            tacheData = []
+            for row in result:
+                tacheData.append({
+                    'IDTACHE': row[0],
+                    'NOMT': row[1],
+                    'DATE_CREATION': row[2],
+                    'DATE_ECHEANCE': row[3],
+                    'DUREE_ESTIMEE': row[4],
+                    'ETATT': row[5],
+                    'DECRIPTION': row[6],
+                    'SCORE': row[7],
+                    'IDPROJ': row[8],
+                    'PN': row[9],
+
+                })
+
+            # return the list of tasks as a JSON response
+            return jsonify({'message': 'success','taches': tacheData}), 200
+        except cx_Oracle.DatabaseError as e:
+            return jsonify({'status': 'error', 'message': 'Database error: ' + str(e)})
+    else:
+        return 'OK'
+
 @app.route('/deconnection', methods=['POST', 'GET'])
 def decon():
     if request.method == 'POST':
