@@ -121,6 +121,7 @@ END;
 
 -- Procédure pour l'ajout d'une tâche
 CREATE OR REPLACE PROCEDURE AJOUTER_TACHE (
+    P_NOMT IN VARCHAR2,
     P_DUREE_ESTIMEE IN TIMESTAMP,
     P_IDPROJ IN NUMBER,
     P_PN IN NUMBER,
@@ -130,10 +131,12 @@ BEGIN
     INSERT INTO TACHE (
         IDTACHE,
         DUREE_ESTIMEE,
+        NOMT,
         IDPROJ,
         PN,
         DECRIPTION
     ) VALUES (
+        P_NOMT,
         SEQ_TACHE.NEXTVAL,
         P_DUREE_ESTIMEE,
         P_IDPROJ,

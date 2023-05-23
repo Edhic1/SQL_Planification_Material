@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request, redirect, url_for, session
 from flask_session import Session
+from datetime import datetime
 import cx_Oracle
 import secrets
 
@@ -295,8 +296,7 @@ def get_data_info():
         if 'session_id' in session and session_id == session['session_id']:
             username = session.get('user')
             connval = session.get('oracle')
-            conn = cx_Oracle.connect(
-                user=connval['username'], password=connval['password'], dsn=connval['dsn'])
+            conn = cx_Oracle.connect(user=connval['username'], password=connval['password'], dsn=connval['dsn'])
 
             if not username or not conn:
                 return 'Connexion à Flask is running'
@@ -421,7 +421,204 @@ def ratetache():
     else:
         return "OK"
 
+@app.route('/ajouterProjet', methods=['POST','GET'])
+def ajouterProjet():
+    if request.method == 'POST':
+        data = request.get_json()
+        username = data['username']
+        password = data['password']
+        nomproj = data['name']
+        date_deb = datetime.strptime(data['dateDeb'], "%d/%m/%Y")
+        description = data['description']
+        date_fin = datetime.strptime(data['dateFin'], "%d/%m/%Y")
 
+        try:
+            conn = cx_Oracle.connect(user=username, password=password, dsn=dsn)
+            cursor = conn.cursor()
+            # get id of user connected from PN NUMBRE
+
+            cursor.execute('SELECT PN FROM PERSONNE WHERE PN = ' + username)
+            PN = int(cursor.fetchone()[0]) # get first element of the result
+            cursor.callproc('super.AJOUTER_PROJET', [nomproj, date_deb, date_fin, description,PN])
+            conn.commit()
+            # return the list of tasks as a JSON response
+            return jsonify({'message': 'success'}), 200
+        except cx_Oracle.DatabaseError as e:
+            return jsonify({'status': 'error', 'message': 'Database error: ' + str(e)})
+    else:
+        return 'OK'
+
+@app.route('/ajouterTache',methods=['POST','GET'])
+def ajouterTache():
+    if request.method == 'POST':
+        data = request.get_json()
+        username = data['username']
+        password = data['password']
+        nomtache = data['nomTache']
+        dateEstimation = data['dateEstimation']
+        description = data['descriptionTache']
+        listPersonne = data['listPersonne']
+        listMateriel = data['listMateriel']
+        projet = data['listprojet']
+        try:
+            conn = cx_Oracle.connect(user=username, password=password, dsn=dsn)
+            cursor = conn.cursor()
+            # get id of user connected from PN NUMBRE
+            cursor.execute('SELECT PN FROM PERSONNE WHERE PN = ' + username)
+            PN =  int( cursor.fetchone()[0] ) # get first element of the result
+            # call proc AJOUTER_TACHE(P_DUREE_ESTIMEE IN TIMESTAMP,P_IDPROJ IN NUMBER,P_PN IN NUMBER,VAL_DESCRIPTION VARCHAR2)
+            # seach id project
+            cursor.execute('SELECT IDPROJ FROM PROJET WHERE NOMPROJ = ' + projet)
+            projet = cursor.fetchone()[0] # get first element of the result
+            # make dateEstimation (String) to TIMESTAMP
+
+            date_obj = datetime.strptime(dateEstimation, "%d/%m/%Y %H:%M")
+            cursor.callproc('super.AJOUTER_TACHE', [nomtache,date_obj,projet,PN,description])
+            conn.commit()
+            # ajouter CREATE OR REPLACE PROCEDURE AFFECTERPERSONNEAPROJET(
+            #   ID_PER NUMBER,
+            #   ID_POJ NUMBER,
+            #   DATEDEBUT1 DATE,
+            #   DATEFIN1 DATE)
+
+            for i in listPersonne.split(','):
+                # get id personne 
+                cursor.execute('SELECT PN FROM PERSONNE WHERE NOMP = ' + i.strip())
+                i = int(cursor.fetchone()[0]) # get first element of the result
+                # change ETATP from PERSONNE to false of PN
+                cursor.execute("UPDATE PERSONNE SET ETATP = 'FALSE' WHERE PN = " + cursor.fetchone()[0])
+                current_datetime = datetime.now()
+                # Format current date as string with format DD/MM/YYYY
+                current_date_str = current_datetime.strftime('%d/%m/%Y')
+                DATEFIN1 = datetime.strptime(dateEstimation, "%d/%m/%Y")
+                DATEFIN1 = DATEFIN1.strftime('%d/%m/%Y')
+                cursor.callproc('super.AFFECTERPERSONNEAPROJET', [i,projet,current_date_str,DATEFIN1])
+            conn.commit()
+            # CREATE OR REPLACE PROCEDURE AFFECTERMATERIELTACHE(
+            #   ID_MAT1 NUMBER,
+            #   ID_TACHE NUMBER,
+            #   DATEDEBUTM DATE,
+            #   DATEFINM DATE )
+            for i in listMateriel.split(','):
+                # get id personne 
+                cursor.execute('SELECT ID_MAT FROM MATERIEL WHERE NOMM = ' + i.strip())
+                i = int(cursor.fetchone()[0])
+                # change ETATP from MATERIEL to false of PN
+                cursor.execute("UPDATE MATERIEL SET ETATD = 'FALSE' WHERE ID_MAT = " + cursor.fetchone()[0])
+                # get id tache from  nomtache 
+                cursor.execute('SELECT IDTACHE FROM TACHE WHERE NOMT = ' + nomtache)
+                id_tache = int(cursor.fetchone()[0])
+                current_datetime = datetime.now()
+                # Format current date as string with format DD/MM/YYYY
+                current_date_str = current_datetime.strftime('%d/%m/%Y')
+                DATEFIN1 = datetime.strptime(dateEstimation, "%d/%m/%Y %H:%M")
+                DATEFIN1 = DATEFIN1.strftime('%d/%m/%Y')
+                cursor.callproc('super.AFFECTERMATERIELTACHE', [i,id_tache,current_date_str,DATEFIN1])
+             
+            conn.commit()
+
+            # return the list of tasks as a JSON response
+            return jsonify({'message': 'success'}), 200
+        except cx_Oracle.DatabaseError as e:
+            return jsonify({'status': 'error', 'message': 'Database error: ' + str(e)})
+    else:
+        return 'OK'       
+
+@app.route('/afficherProjetDeTache',methods=['POST','GET'])
+def afficherProjetDeTache():
+    if request.method == 'POST':
+        data = request.get_json()
+        username = data['username']
+        password = data['password']
+
+
+        try:
+            conn = cx_Oracle.connect(user=username, password=password, dsn=dsn)
+            cursor = conn.cursor()
+            cursor.execute('SELECT PN FROM PERSONNE WHERE PN = ' + username)
+            PN =  cursor.fetchone()[0]  # get first element of the result
+            cursor.execute('SELECT * FROM PROJET WHERE PN = ' + PN + " AND ETATPROJ = 'en cours de execution' ")
+            result = cursor.fetchall()
+            # Transformation des données en format JSON
+            ProjData = []
+            for row in result:
+                ProjData.append({
+                    'IDPROJ': row[0],
+                    'NOMPROJ': row[1],
+                    'DATEDEB': row[2],
+                })
+            # return the list of tasks as a JSON response
+            return jsonify({'message': 'success','projets': ProjData}), 200
+        except cx_Oracle.DatabaseError as e:
+            return jsonify({'status': 'error', 'message': 'Database error: ' + str(e)})
+    else:
+        return 'OK'   
+
+
+@app.route('/affichePersonner',methods=['POST','GET'])
+def affichePersonner():
+    if request.method == 'POST':
+        data = request.get_json()
+        username = data['username']
+        password = data['password']
+
+        try:
+            conn = cx_Oracle.connect(user=username, password=password, dsn=dsn)
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT * FROM PERSONNE WHERE ISCHEF = 0 AND ETATP = 'TRUE'")
+            result = cursor.fetchall()
+            # Transformation des données en format JSON
+            PersonneData = []
+            for row in result:
+                PersonneData.append({
+                    'PN': row[0],
+                    'NOMP': row[1],
+                    'PRENOM': row[2],
+                    'EMAIL': row[3],
+                    'DATEEMB': row[4],
+                    'TITRE': row[5],  # fonctionalité de l'employé
+                    'ETATP': row[6],
+                    'NDEP': row[7],
+                    'ischef': row[8]  # 1 si chef de projet, 0 sinon
+                })
+
+            # return the list of tasks as a JSON response
+            return jsonify({'message': 'success','personnes': PersonneData}), 200
+        except cx_Oracle.DatabaseError as e:
+            return jsonify({'status': 'error', 'message': 'Database error: ' + str(e)})
+    else:
+        return 'OK'
+   
+@app.route('/afficheMateriel',methods=['POST','GET'])
+def afficheMateriel():
+    if request.method == 'POST':
+        data = request.get_json()
+        username = data['username']
+        password = data['password']
+
+        try:
+            conn = cx_Oracle.connect(user=username, password=password, dsn=dsn)
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT * FROM MATERIEL WHERE ETATD = 'TRUE' AND ETATM = 'FALSE'")
+            result = cursor.fetchall()
+            # Transformation des données en format JSON
+            materielData = []
+            for row in result:
+                materielData.append({
+                    'ID_MAT': row[0],
+                    'NOMM': row[1],
+                    'TYPE': row[2],
+
+                })
+
+            # return the list of tasks as a JSON response
+            return jsonify({'message': 'success','materiels': materielData}), 200
+        except cx_Oracle.DatabaseError as e:
+            return jsonify({'status': 'error', 'message': 'Database error: ' + str(e)})
+    else:
+        return 'OK'    
 
 @app.route('/deconnection', methods=['POST', 'GET'])
 def decon():
