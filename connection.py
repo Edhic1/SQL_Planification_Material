@@ -48,7 +48,7 @@ remarque :
 
 
 """
-Session(app)
+#Session(app)
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
@@ -62,48 +62,27 @@ def index():
         try:
             conn = cx_Oracle.connect(user=username, password=password, dsn=dsn)
 
-            # store the connection in Flask-Session
-            # we cant stock the connection object in Flask-Session (conn)
-            """
-            session['oracle'] = {
-                'username': username,
-                'password': password,
-                'dsn': dsn
-            }
-            """
-            
-
-            
-            # session['user'] = username
-            # session['session_id'] = session.sid
-
-            # session.modified = True
-
-            # si la connexion est réussie, retourner une réponse 200 OK
-
-            # session_id = session.sid
-            
-            # fonction de verification si l'utilisateur est un chef ou non
-
             cursor = conn.cursor()
             cursor.execute("SELECT super.FUNCISCHEF() FROM dual")
             result = cursor.fetchone()[0]
             print(result)
             # Fermer le curseur et la connexion
             # cursor.close()
-            sev = 'flask'
-            return jsonify({'session_id': sev,"ischef": result}), 200
+            #sev = 'flask'
+            return jsonify({'status': 'ok',"ischef": result}), 200
 
         except cx_Oracle.DatabaseError as e:
             # si la connexion est échouée, retourner une réponse 401 Unauthorized
             return jsonify({'status': 'failed', 'message': str(e)}), 401
             print(str(e))
     else:
+        print("bonjour tout le monde")
+        """
         user = request.args.get('user')
         password = request.args.get('pass')
         data = [{'user': user, 'passw': password}]
         return jsonify(data)
-
+        """
 
 @app.route('/materiel', methods=['POST', 'GET'])
 def get_data_mat():
@@ -139,44 +118,37 @@ def get_data_mat():
         return 'OK'
 
 
-@app.route('/projet', methods=['POST', 'GET'])
+@app.route('/afficherProjet', methods=['POST', 'GET'])
 def get_data_proj():
     if request.method == 'POST':
         data = request.get_json()
         array1 = data[0]
-        session_id = array1['session_id'].encode('utf-8')
-        """
-        found_sessions = []
-        print (session.items())
-        for key, value in session.items():
-            if 'session_id' in value and value['session_id'] == session_id:
-                found_sessions.append(key)
-        """
-
-        if session_id and session_id == app.config["SESSION_ORACLE"].get('session_id'):
-            print('ok')
-            connval = app.config["SESSION_ORACLE"]
-            conn = cx_Oracle.connect(
-                user=connval.get('username'), password=connval.get('password'), dsn=connval.get('dsn'))
-            if not conn:
-                return redirect(url_for('info'))
+        username = array1['username']
+        password = array1['password']
+        
+        try:
+            conn = cx_Oracle.connect(user=username, password=password, dsn=dsn)
             cursor = conn.cursor()
-            cursor.execute('SELECT * FROM PROJET')
+            cursor.execute("SELECT * From super.afficherProjet")
             result = cursor.fetchall()
             print(result)
             # Transformation des données en format JSON
             data = []
             for row in result:
-                data.append({
-                    'IDPROJ': row[0],
-                    'NOMPROJ': row[1],
-                    'DATEDEB': row[2],
-                    'DESCRIPTION': row[3],
-                    'PN': row[4],
-                    'ETATPROJ': row[5]
-                })
+                data.append(
+                    {
+                        "IDPROJ": row[0],
+                        "NOMPROJ": row[1],
+                        "DATEDEB": row[2],
+                        "DateFin": row[3],
+                        "DESCRIPTION": row[4],
+                        "PN": row[5],
+                        "ETATPROJ": row[6],
+                    }
+                )
             return jsonify(data)
-        else:
+        except cx_Oracle.DatabaseError as e:
+            print("probleme dans la connection")
             return redirect('/info')
     else:
         return 'OK'

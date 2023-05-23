@@ -163,9 +163,9 @@ END;
 /************************* creation des roles *************************/
 
 /*////////////////// ROLE POUR LES CHEG ///////////////////////// /*/
-
-CREATE ROLE ROLECHEF;
-
+ALTER SESSION SET "_oracle_script"=false;
+CREATE ROLE ROLECHEF2;
+grant dba to ROLECHEF2;
 GRANT CREATE SESSION TO ROLECHEF;
 GRANT SELECT, INSERT, UPDATE, DELETE ON DEPARTEMENT TO ROLECHEF;
 GRANT SELECT, INSERT, UPDATE, DELETE ON PERSONNE TO ROLECHEF;
