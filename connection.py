@@ -48,7 +48,7 @@ remarque :
 
 
 """
-
+Session(app)
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
@@ -71,14 +71,9 @@ def index():
                 'dsn': dsn
             }
             """
-            ses = secret_key.encode('utf-8')
-            app.config["SESSION_ORACLE"] = {
-                "session_id": ses,
-                "username": username,
-                "password": password,
-                "dsn": dsn,
-            }
-            Session(app)
+            
+
+            
             # session['user'] = username
             # session['session_id'] = session.sid
 
@@ -96,13 +91,13 @@ def index():
             print(result)
             # Fermer le curseur et la connexion
             # cursor.close()
-        
-            sev = ses.decode('utf-8')
+            sev = 'flask'
             return jsonify({'session_id': sev,"ischef": result}), 200
 
         except cx_Oracle.DatabaseError as e:
             # si la connexion est échouée, retourner une réponse 401 Unauthorized
             return jsonify({'status': 'failed', 'message': str(e)}), 401
+            print(str(e))
     else:
         user = request.args.get('user')
         password = request.args.get('pass')
@@ -472,7 +467,7 @@ def ajouterTache():
             # call proc AJOUTER_TACHE(P_DUREE_ESTIMEE IN TIMESTAMP,P_IDPROJ IN NUMBER,P_PN IN NUMBER,VAL_DESCRIPTION VARCHAR2)
             # seach id project
             cursor.execute('SELECT IDPROJ FROM PROJET WHERE NOMPROJ = ' + projet)
-            projet = cursor.fetchone()[0] # get first element of the result
+            projet = int(cursor.fetchone()[0]) # get first element of the result
             # make dateEstimation (String) to TIMESTAMP
 
             #date_obj = datetime.strptime(dateEstimation, "%d/%m/%Y %H:%M")
