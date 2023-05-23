@@ -473,8 +473,7 @@ def ajouterTache():
             # make dateEstimation (String) to TIMESTAMP
 
             #date_obj = datetime.strptime(dateEstimation, "%d/%m/%Y %H:%M")
-            cursor.callproc('super.AJOUTER_TACHE2', [nomtache,dateEstimation,projet,PN,description])
-            conn.commit()
+
             # ajouter CREATE OR REPLACE PROCEDURE AFFECTERPERSONNEAPROJET(
             #   ID_PER NUMBER,
             #   ID_POJ NUMBER,
@@ -487,6 +486,8 @@ def ajouterTache():
                 i = int(cursor.fetchone()[0]) # get first element of the result
                 # change ETATP from PERSONNE to false of PN
                 cursor.execute("UPDATE PERSONNE SET ETATP = 'FALSE' WHERE PN = " + cursor.fetchone()[0])
+                cursor.callproc('super.AJOUTER_TACHE2', [nomtache,dateEstimation,projet,i,description])
+                conn.commit()
                 current_datetime = datetime.now()
                 # Format current date as string with format DD/MM/YYYY
                 current_date_str = current_datetime.strftime('%d/%m/%Y')
