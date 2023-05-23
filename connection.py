@@ -18,9 +18,9 @@ app.secret_key = secret_key.encode('utf-8')
 
 # Connexion à la base de données Oracle
 
-dsn = cx_Oracle.makedsn(host='localhost', port='1521',
-                        sid='xe')  # for localhost oracle
-# dsn = cx_Oracle.makedsn(host='20.55.44.15', port='1521', service_name='ORCLCDB.localdomain') # for remote oracle
+#dsn = cx_Oracle.makedsn(host='localhost', port='1521',
+#                       sid='xe')  # for localhost oracle
+dsn = cx_Oracle.makedsn(host='20.55.44.15', port='1521', service_name='ORCLCDB.localdomain') # for remote oracle
 
 # Route pour récupérer les données en format JSON
 
@@ -91,7 +91,7 @@ def index():
             # fonction de verification si l'utilisateur est un chef ou non
 
             cursor = conn.cursor()
-            cursor.execute("SELECT dev.FUNCISCHEF() FROM dual")
+            cursor.execute("SELECT super.FUNCISCHEF() FROM dual")
             result = cursor.fetchone()[0]
             print(result)
             # Fermer le curseur et la connexion
@@ -197,21 +197,20 @@ def get_task_poject():
         if session_id and session_id == app.config["SESSION_ORACLE"].get("session_id"):
             connval = app.config["SESSION_ORACLE"]
             print("ok")
-            # conn = cx_Oracle.connect(
-            #   user=connval.get('username'), password=connval.get('password'), dsn=connval.get('dsn'))
-            conn = cx_Oracle.connect(
-                connval.get("username")
-                + "/"
-                + connval.get("password")
-                + "@localhost:1521/XEPDB1"
-            )
+            conn = cx_Oracle.connect(user=connval.get('username'), password=connval.get('password'), dsn=connval.get('dsn'))
+            #conn = cx_Oracle.connect(
+            #   connval.get("username")
+            #    + "/"
+            #    + connval.get("password")
+            #    + "@localhost:1521/XEPDB1"
+            #)
             if not conn:
                 return redirect(url_for("info"))
             print(id_projet2)
             # id_projet2 = 1
             cursor = conn.cursor()
             cursor.execute(
-                "SELECT * FROM dev.AFFICHERTACHEPROJETCHEF WHERE IDPROJ = :id_projet",
+                "SELECT * FROM super.AFFICHERTACHEPROJETCHEF WHERE IDPROJ = :id_projet",
                 {"id_projet": id_projet2},
             )
 
@@ -252,21 +251,23 @@ def get_data_graph():
         if session_id and session_id == app.config["SESSION_ORACLE"].get('session_id'):
             connval = app.config["SESSION_ORACLE"]
             print('ok')
-            # conn = cx_Oracle.connect(
-            #   user=connval.get('username'), password=connval.get('password'), dsn=connval.get('dsn'))
+            conn = cx_Oracle.connect(
+               user=connval.get('username'), password=connval.get('password'), dsn=connval.get('dsn'))
+            """
             conn = cx_Oracle.connect(
                 connval.get('username') + '/' + connval.get('password') + '@localhost:1521/XEPDB1')
+            """
 
             if not conn:
                 return redirect(url_for('info'))
 
             if query == 'difference':
                 cursor = conn.cursor()
-                cursor.execute('select * from dev.afficherdiffrenceEntredate')
+                cursor.execute('select * from super.afficherdiffrenceEntredate')
                 result = cursor.fetchall()
             elif query == 'score':
                 cursor = conn.cursor()
-                cursor.execute('select * from dev.afficherScore')
+                cursor.execute('select * from super.afficherScore')
                 result = cursor.fetchall()
             else:
                 return 'Invalid query'
@@ -398,20 +399,22 @@ def ratetache():
         if session_id and session_id == app.config["SESSION_ORACLE"].get("session_id"):
             connval = app.config["SESSION_ORACLE"]
             print("ok")
-            # conn = cx_Oracle.connect(
-            #   user=connval.get('username'), password=connval.get('password'), dsn=connval.get('dsn'))
+            conn = cx_Oracle.connect(
+              user=connval.get('username'), password=connval.get('password'), dsn=connval.get('dsn'))
+            """
             conn = cx_Oracle.connect(
                 connval.get("username")
                 + "/"
                 + connval.get("password")
                 + "@localhost:1521/XEPDB1"
             )
+            """
 
             if not conn:
                 return redirect(url_for("info"))
 
             cursor = conn.cursor()
-            cursor.callproc("dev.rateTache", [id_tache, scoreval])
+            cursor.callproc("super.rateTache", [id_tache, scoreval])
 
             # enregistrer les changements dans la base de données
             conn.commit()
