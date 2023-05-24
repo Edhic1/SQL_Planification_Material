@@ -176,11 +176,11 @@ def get_task_poject():
             cursor = conn.cursor()
             if ischef == 1:
                 cursor.execute(
-                    "SELECT * FROM dev.AFFICHERTACHEPROJETCHEF WHERE IDPROJ = :id_projet",
+                    "SELECT * FROM super.AFFICHERTACHEPROJETCHEF WHERE IDPROJ = :id_projet",
                     {"id_projet": id_projet2},
                 )
             else:
-                cursor.execute("select * from dev.AFFICHERTACHEEMP")
+                cursor.execute("select * from super.AFFICHERTACHEEMP")
 
             result = cursor.fetchall()
 
@@ -223,11 +223,11 @@ def get_data_graph():
 
             if query == "difference":
                 cursor = conn.cursor()
-                cursor.execute("select * from dev.afficherdiffrenceEntredate")
+                cursor.execute("select * from super.afficherdiffrenceEntredate")
                 result = cursor.fetchall()
             elif query == "score":
                 cursor = conn.cursor()
-                cursor.execute("select * from dev.afficherScore")
+                cursor.execute("select * from super.afficherScore")
                 result = cursor.fetchall()
             else:
                 return "Invalid query"
