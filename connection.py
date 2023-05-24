@@ -73,8 +73,9 @@ def index():
 
         except cx_Oracle.DatabaseError as e:
             # si la connexion est échouée, retourner une réponse 401 Unauthorized
-            return jsonify({'status': 'failed', 'message': str(e)}), 401
             print(str(e))
+            return jsonify({'status': 'failed', 'message': str(e)}), 401
+            
     else:
         print("bonjour tout le monde")
         """
@@ -158,28 +159,28 @@ def get_task_poject():
     if request.method == "POST":
         data = request.get_json()
         array1 = data[0]
-        session_id = array1["session_id"].encode("utf-8")
-        id_projet2 = array1["idproj"]
+        username=array1["username"]
+        password=array1["password"]
+        ischef = array1["ischef"]
 
-        if session_id and session_id == app.config["SESSION_ORACLE"].get("session_id"):
-            connval = app.config["SESSION_ORACLE"]
-            print("ok")
-            conn = cx_Oracle.connect(user=connval.get('username'), password=connval.get('password'), dsn=connval.get('dsn'))
-            #conn = cx_Oracle.connect(
-            #   connval.get("username")
-            #    + "/"
-            #    + connval.get("password")
-            #    + "@localhost:1521/XEPDB1"
-            #)
+        if ischef == 1:
+            id_projet2 = array1["idproj"]  # selement pour les chef
+
+        try:
+            conn = cx_Oracle.connect(user=username, password=password, dsn=dsn)
+          
             if not conn:
                 return redirect(url_for("info"))
-            print(id_projet2)
+            print(ischef)
             # id_projet2 = 1
             cursor = conn.cursor()
-            cursor.execute(
-                "SELECT * FROM super.AFFICHERTACHEPROJETCHEF WHERE IDPROJ = :id_projet",
-                {"id_projet": id_projet2},
-            )
+            if ischef == 1:
+                cursor.execute(
+                    "SELECT * FROM dev.AFFICHERTACHEPROJETCHEF WHERE IDPROJ = :id_projet",
+                    {"id_projet": id_projet2},
+                )
+            else:
+                cursor.execute("select * from dev.AFFICHERTACHEEMP")
 
             result = cursor.fetchall()
 
@@ -196,64 +197,54 @@ def get_task_poject():
                         "DECRIPTION": row[5],
                         "SCORE": row[6],
                         "IDPROJ": row[7],
-                        "NOMEMP": row[8],
+                        "nomproj": row[8],
+                        "NOMEMP": row[9],
                     }
                 )
             print(data)
             return jsonify(data)
-        else:
+        except cx_Oracle.DatabaseError as e:
             return redirect("/info")
     else:
         return "OK"
 
 
-@app.route('/afficherGraph1', methods=['POST', 'GET'])
+@app.route("/afficherGraph1", methods=["POST", "GET"])
 def get_data_graph():
-    if request.method == 'POST':
+    if request.method == "POST":
         data = request.get_json()
         array1 = data[0]
-        query = data[0]['query']
-        session_id = array1['session_id'].encode('utf-8')
+        query = data[0]["query"]
+        session_id = array1["session_id"].encode("utf-8")
 
-        if session_id and session_id == app.config["SESSION_ORACLE"].get('session_id'):
-            connval = app.config["SESSION_ORACLE"]
-            print('ok')
-            conn = cx_Oracle.connect(
-               user=connval.get('username'), password=connval.get('password'), dsn=connval.get('dsn'))
-            """
-            conn = cx_Oracle.connect(
-                connval.get('username') + '/' + connval.get('password') + '@localhost:1521/XEPDB1')
-            """
+        try:
+            
+            conn = cx_Oracle.connect(user=username, password=password, dsn=dsn)
 
-            if not conn:
-                return redirect(url_for('info'))
-
-            if query == 'difference':
+            if query == "difference":
                 cursor = conn.cursor()
-                cursor.execute('select * from super.afficherdiffrenceEntredate')
+                cursor.execute("select * from dev.afficherdiffrenceEntredate")
                 result = cursor.fetchall()
-            elif query == 'score':
+            elif query == "score":
                 cursor = conn.cursor()
-                cursor.execute('select * from super.afficherScore')
+                cursor.execute("select * from dev.afficherScore")
                 result = cursor.fetchall()
             else:
-                return 'Invalid query'
+                return "Invalid query"
 
             print(result)
 
             # Transformation des données en format JSON
             data = []
             for row in result:
-                data.append({
-                    'nomemp': row[0],
-                    'score': row[1]
-                })
+                data.append({"nomemp": row[0], "score": row[1]})
 
             return jsonify(data)
-        else:
-            return redirect('/info')
+        except cx_Oracle.DatabaseError as e:
+            print(str(e))
+            return redirect("/info")
     else:
-        return 'OK'
+        return "OK"
 
 
 @app.route('/info', methods=['POST', 'GET'])
