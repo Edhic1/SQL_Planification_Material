@@ -415,11 +415,11 @@ def ajouterTache():
             conn = cx_Oracle.connect(user=username, password=password, dsn=dsn)
             cursor = conn.cursor()
             # get id of user connected from PN NUMBRE
-            cursor.execute('SELECT PN FROM PERSONNE WHERE PN = ' + username)
+            cursor.execute('SELECT PN FROM super.PERSONNE WHERE PN = ' + username)
             PN =  int( cursor.fetchone()[0] ) # get first element of the result
             # call proc AJOUTER_TACHE(P_DUREE_ESTIMEE IN TIMESTAMP,P_IDPROJ IN NUMBER,P_PN IN NUMBER,VAL_DESCRIPTION VARCHAR2)
             # seach id project
-            cursor.execute('SELECT IDPROJ FROM PROJET WHERE NOMPROJ = ' + projet)
+            cursor.execute('SELECT IDPROJ FROM super.PROJET WHERE NOMPROJ = ' + projet)
             projet = int(cursor.fetchone()[0]) # get first element of the result
             # make dateEstimation (String) to TIMESTAMP
 
@@ -433,10 +433,10 @@ def ajouterTache():
 
             for i in listPersonne.split(','):
                 # get id personne 
-                cursor.execute('SELECT PN FROM PERSONNE WHERE NOMP = ' + i.strip())
+                cursor.execute('SELECT PN FROM super.PERSONNE WHERE NOMP = ' + i.strip())
                 i = int(cursor.fetchone()[0]) # get first element of the result
                 # change ETATP from PERSONNE to false of PN
-                cursor.execute("UPDATE PERSONNE SET ETATP = 'FALSE' WHERE PN = " + cursor.fetchone()[0])
+                cursor.execute("UPDATE super.PERSONNE SET ETATP = 'FALSE' WHERE PN = " + cursor.fetchone()[0])
                 cursor.callproc('super.AJOUTER_TACHE2', [nomtache,dateEstimation,projet,i,description])
                 conn.commit()
                 current_datetime = datetime.now()
@@ -453,12 +453,12 @@ def ajouterTache():
             #   DATEFINM DATE )
             for i in listMateriel.split(','):
                 # get id personne 
-                cursor.execute('SELECT ID_MAT FROM MATERIEL WHERE NOMM = ' + i.strip())
+                cursor.execute('SELECT ID_MAT FROM super.MATERIEL WHERE NOMM = ' + i.strip())
                 i = int(cursor.fetchone()[0])
                 # change ETATP from MATERIEL to false of PN
-                cursor.execute("UPDATE MATERIEL SET ETATD = 'FALSE' WHERE ID_MAT = " + cursor.fetchone()[0])
+                cursor.execute("UPDATE super.MATERIEL SET ETATD = 'FALSE' WHERE ID_MAT = " + cursor.fetchone()[0])
                 # get id tache from  nomtache 
-                cursor.execute('SELECT IDTACHE FROM TACHE WHERE NOMT = ' + nomtache)
+                cursor.execute('SELECT IDTACHE FROM super.TACHE WHERE NOMT = ' + nomtache)
                 id_tache = int(cursor.fetchone()[0])
                 current_datetime = datetime.now()
                 # Format current date as string with format DD/MM/YYYY
@@ -518,7 +518,7 @@ def affichePersonner():
             conn = cx_Oracle.connect(user=username, password=password, dsn=dsn)
             cursor = conn.cursor()
             
-            cursor.execute("SELECT * FROM PERSONNE WHERE ISCHEF = 0 AND ETATP = 'TRUE'")
+            cursor.execute("SELECT * FROM super.PERSONNE WHERE ISCHEF = 0 AND ETATP = 'TRUE'")
             result = cursor.fetchall()
             # Transformation des données en format JSON
             PersonneData = []
