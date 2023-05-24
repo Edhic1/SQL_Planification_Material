@@ -215,7 +215,8 @@ def get_data_graph():
         data = request.get_json()
         array1 = data[0]
         query = data[0]["query"]
-        session_id = array1["session_id"].encode("utf-8")
+        username = array1["username"]
+        password = array1["password"]
 
         try:
             
@@ -350,34 +351,23 @@ def get_taches():
 def ratetache():
     if request.method == "POST":
         data = request.get_json()
-        session_id = data["session_id"].encode("utf-8")
+        username = data["username"]
+        password = data["password"]
         id_tache = data["id_tache"]
         scoreval = data["scoreval"]
 
-        if session_id and session_id == app.config["SESSION_ORACLE"].get("session_id"):
-            connval = app.config["SESSION_ORACLE"]
-            print("ok")
-            conn = cx_Oracle.connect(
-              user=connval.get('username'), password=connval.get('password'), dsn=connval.get('dsn'))
-            """
-            conn = cx_Oracle.connect(
-                connval.get("username")
-                + "/"
-                + connval.get("password")
-                + "@localhost:1521/XEPDB1"
-            )
-            """
-
-            if not conn:
-                return redirect(url_for("info"))
-
+        try:
+            
+            conn = cx_Oracle.connect(user=username, password=password, dsn=dsn)
+            
             cursor = conn.cursor()
             cursor.callproc("super.rateTache", [id_tache, scoreval])
 
             # enregistrer les changements dans la base de données
             conn.commit()
             return jsonify({"etat": "ok"}), 200
-        else:
+        except cx_Oracle.DatabaseError as e:
+            print(str(e))
             return redirect("/info")
     else:
         return "OK"
