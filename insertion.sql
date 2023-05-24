@@ -29,6 +29,10 @@ call AJOUTER_PERSONNE('Johnson', 'Michael', 'michael.johnson@entreprise.com','01
 call AJOUTER_PERSONNE( 'Williams', 'Emily', 'emily.williams@entreprise.com','01-04-2021', 'Employé', 4);
 call AJOUTER_PERSONNE( 'Brown', 'James', 'james.brown@entreprise.com','01-05-2021', 'Employé', 5);
 
+----- employer -------
+call AJOUTER_PERSONNE( 'jhon', 'dj', 'james.brown@entreprise.com','01-05-2021', 'Employé', 5);
+call AJOUTER_PERSONNE( 'ahmed', 'James', 'james.brown@entreprise.com','01-05-2021', 'Employé', 5);
+call AJOUTER_PERSONNE( 'nabil', 'James', 'james.brown@entreprise.com','01-05-2021', 'Employé', 5);
 
 -- here is for commit ajouter
 commit;

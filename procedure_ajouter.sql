@@ -22,12 +22,12 @@ CREATE OR REPLACE PROCEDURE AJOUTER_PERSONNE (
     P_EMAIL IN VARCHAR2,
     P_DATEEMB IN DATE,
     P_TITRE IN VARCHAR2,
-    P_NDEP IN NUMBER
-    ischef DEFAULT 0
+    P_NDEP IN NUMBER,
+    ischef IN NUMBER DEFAULT 0
 ) AS
     TMP VARCHAR2(60);
 BEGIN
-    TMP:=GENEREMOTPASSE(8);
+    TMP := GENEREMOTPASSE(8);
     INSERT INTO PERSONNE (
         PN,
         NOMP,
@@ -45,26 +45,23 @@ BEGIN
         P_TITRE,
         P_NDEP
     );
-    EXECUTE IMMEDIATE 'create user '
-        ||P_NOMP
-        ||' identified by '
-        ||TMP;
-    EXECUTE IMMEDIATE 'GRANT CREATE SESSION TO '
-        ||P_NOMP;
+    EXECUTE IMMEDIATE 'create user ' || P_NOMP || ' identified by ' || TMP;
+    EXECUTE IMMEDIATE 'GRANT CREATE SESSION TO ' || P_NOMP;
     
-    if (ischef) THEN
-    EXECUTE IMMEDIATE 'grant ROLECHEF2 to '||val.USERNAME;
+    IF (ischef = 1) THEN
+        EXECUTE IMMEDIATE 'GRANT ROLECHEF2 TO ' || P_NOMP;
     ELSE
-    EXECUTE IMMEDIATE 'grant ROLEEMP to '||val.USERNAME;
-    end if;
+        EXECUTE IMMEDIATE 'GRANT ROLEEMP TO ' || P_NOMP;
+    END IF;
 
-    INSERT INTO USERPASSWORD VALUES(
+    INSERT INTO USERPASSWORD VALUES (
         SEQ_PERSONNE.CURRVAL,
         P_NOMP,
         TMP
     );
 END;
 /
+
 
 -- Procédure pour l'ajout d'un département
 CREATE OR REPLACE PROCEDURE AJOUTER_DEPARTEMENT (
