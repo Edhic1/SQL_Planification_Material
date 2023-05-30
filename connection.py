@@ -66,9 +66,11 @@ def index():
             cursor.execute("SELECT super.FUNCISCHEF() FROM dual")
             result = cursor.fetchone()[0]
             print(result)
+            print(username)
             # Fermer le curseur et la connexion
             # cursor.close()
             #sev = 'flask'
+            conn.close()
             return jsonify({'status': 'ok',"ischef": result}), 200
 
         except cx_Oracle.DatabaseError as e:
@@ -112,6 +114,7 @@ def get_data_mat():
                     'ETATD': row[2],
                     'ETATM': row[2]
                 })
+            conn.close()
             return jsonify(data)
         else:
             return redirect('/info')
@@ -147,6 +150,8 @@ def get_data_proj():
                         "ETATPROJ": row[6],
                     }
                 )
+            print(username)
+            conn.close()
             return jsonify(data)
         except cx_Oracle.DatabaseError as e:
             print("probleme dans la connection")
@@ -202,6 +207,7 @@ def get_task_poject():
                     }
                 )
             print(data)
+            conn.close()
             return jsonify(data)
         except cx_Oracle.DatabaseError as e:
             return redirect("/info")
@@ -239,6 +245,8 @@ def get_data_graph():
             data = []
             for row in result:
                 data.append({"nomemp": row[0], "score": row[1]})
+            
+            conn.close()
 
             return jsonify(data)
         except cx_Oracle.DatabaseError as e:
@@ -277,6 +285,7 @@ def get_data_info():
                 'NDEP': result[7],
                 'ischef': result[8]  # 1 si chef de projet, 0 sinon
             }]
+            conn.close()
             return jsonify(data)
         else:
             return jsonify({'session id': 'session id not found'}), 401
@@ -365,6 +374,7 @@ def ratetache():
 
             # enregistrer les changements dans la base de données
             conn.commit()
+            conn.close()
             return jsonify({"etat": "ok"}), 200
         except cx_Oracle.DatabaseError as e:
             print(str(e))
@@ -392,6 +402,7 @@ def ajouterProjet():
             PN = int(cursor.fetchone()[0]) # get first element of the result
             cursor.callproc('super.AJOUTER_PROJET', [nomproj, date_fin, description,PN,date_deb])
             conn.commit()
+            conn.close()
             # return the list of tasks as a JSON response
             return jsonify({'message': 'success'}), 200
         except cx_Oracle.DatabaseError as e:
@@ -415,8 +426,8 @@ def ajouterTache():
             conn = cx_Oracle.connect(user=username, password=password, dsn=dsn)
             cursor = conn.cursor()
             # get id of user connected from PN NUMBRE
-            cursor.execute('SELECT PN FROM super.PERSONNE WHERE NOMP = :user_name ', user_name=username)
-            PN =  int( cursor.fetchone()[0] ) # get first element of the result
+            cursor.execute('SELECT PN FROM super.PERSONNE WHERE NOMP = :user_name ', user_name=username.upper())
+            PN =  int( cursor.fetchone()[0]) # get first element of the result
             # call proc AJOUTER_TACHE(P_DUREE_ESTIMEE IN TIMESTAMP,P_IDPROJ IN NUMBER,P_PN IN NUMBER,VAL_DESCRIPTION VARCHAR2)
             # seach id project
             cursor.execute('SELECT IDPROJ FROM super.PROJET WHERE NOMPROJ = :my_project', my_project=projet)
@@ -435,18 +446,25 @@ def ajouterTache():
                 # get id personne 
                 cursor.execute('SELECT PN FROM super.PERSONNE WHERE NOMP = :my_var', my_var=i.strip())
                 id = cursor.fetchone()[0]
-                i = int(id) # get first element of the result
+                id = int(id) # get first element of the result
                 # change ETATP from PERSONNE to false of PN
-                cursor.execute("UPDATE super.PERSONNE SET ETATP = 'FALSE' WHERE PN = :my_PN" ,my_PN=id)
-                cursor.callproc('super.AJOUTER_TACHE2', [nomtache,dateEstimation,projet,i,description])
-                conn.commit()
+                
                 current_datetime = datetime.now()
                 # Format current date as string with format DD/MM/YYYY
                 current_date_str = current_datetime.strftime('%d/%m/%Y')
-                DATEFIN1 = datetime.strptime(dateEstimation, "%d/%m/%Y")
-                DATEFIN1 = DATEFIN1.strftime('%d/%m/%Y')
-                cursor.callproc('super.AFFECTERPERSONNEAPROJET', [i,projet,current_date_str,DATEFIN1])
-            conn.commit()
+                print(dateEstimation.strip())
+                #DATEFIN1 = datetime.strptime(dateEstimation.strip(), "%d/%m/%Y %H:%M")
+                DATEFIN1 = datetime.strptime(dateEstimation.strip(),'%d/%m/%Y %H:%M').date()
+                print(DATEFIN1)
+                
+                print(current_date_str.strip())
+                cursor.callproc('super.AFFECTERPERSONNEAPROJET', [id,projet,current_datetime,DATEFIN1])
+                conn.commit()
+                
+                cursor.execute("UPDATE super.PERSONNE SET ETATP = 'FALSE' WHERE PN = :my_PN" ,my_PN=id)
+                cursor.callproc('super.AJOUTER_TACHE2', [nomtache,dateEstimation,projet,i,description])
+                conn.commit()
+                
             # CREATE OR REPLACE PROCEDURE AFFECTERMATERIELTACHE(
             #   ID_MAT1 NUMBER,
             #   ID_TACHE NUMBER,
@@ -469,11 +487,16 @@ def ajouterTache():
                 cursor.callproc('super.AFFECTERMATERIELTACHE', [i,id_tache,current_date_str,DATEFIN1])
              
             conn.commit()
+            conn.close()
 
             # return the list of tasks as a JSON response
             return jsonify({'message': 'success'}), 200
         except cx_Oracle.DatabaseError as e:
-            return jsonify({'status': 'error', 'message': 'Database error: ' + str(e)})
+            print(str(e))
+            return jsonify({'status': 'error', 'message': 'Database error: ' + str(e)}),401
+        except Exception as e :
+            print(str(e))
+            return jsonify({'status': 'error', 'message': 'Database error: ' + str(e)}),401
     else:
         return 'OK'       
 
@@ -488,8 +511,11 @@ def afficherProjetDeTache():
         try:
             conn = cx_Oracle.connect(user=username, password=password, dsn=dsn)
             cursor = conn.cursor()
-            cursor.execute('SELECT PN FROM super.PERSONNE WHERE NOMP = :my_personne',my_personne=username)
+            print(username)
+            cursor.execute('SELECT PN FROM super.PERSONNE WHERE NOMP = :my_personne',my_personne=username.upper())
+            print(username.upper())
             PN =  cursor.fetchone()[0]  # get first element of the result
+            print(PN)
             cursor.execute("SELECT * FROM super.PROJET WHERE PN = :my_PN AND ETATPROJ = 'en cours de execution' ",my_PN=PN)
             result = cursor.fetchall()
             # Transformation des données en format JSON
@@ -500,6 +526,7 @@ def afficherProjetDeTache():
                     'NOMPROJ': row[1],
                     'DATEDEB': row[2],
                 })
+            conn.close()
             # return the list of tasks as a JSON response
             return jsonify({'message': 'success','projets': ProjData}), 200
         except cx_Oracle.DatabaseError as e:
@@ -536,6 +563,7 @@ def affichePersonner():
                     'ischef': row[8]  # 1 si chef de projet, 0 sinon
                 })
                 print(row)
+            conn.close()
 
             # return the list of tasks as a JSON response
             return jsonify({'message': 'success','personnes': PersonneData}), 200
@@ -566,7 +594,8 @@ def afficheMateriel():
                     'TYPE': row[2],
 
                 })
-
+                
+            conn.close()
             # return the list of tasks as a JSON response
             return jsonify({'message': 'success','materiels': materielData}), 200
         except cx_Oracle.DatabaseError as e:

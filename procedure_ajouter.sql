@@ -38,7 +38,7 @@ BEGIN
         NDEP
     ) VALUES (
         SEQ_PERSONNE.NEXTVAL,
-        P_NOMP,
+        upper(P_NOMP),
         P_PRENOM,
         P_EMAIL,
         P_DATEEMB,
@@ -149,6 +149,7 @@ END;
 /
 
 -- Procédure pour l'ajout d'une tâche
+call AJOUTER_TACHE2('projet1','30/05/2023 19:55',22,14,'tache2');
 CREATE OR REPLACE PROCEDURE AJOUTER_TACHE2 (
     P_NOMT IN VARCHAR2,
     P_DUREE_ESTIMEE IN VARCHAR2,
@@ -207,6 +208,8 @@ INSERT INTO TACHE
 VALUES (SEQ_TACHE.NEXTVAL,, TO_TIMESTAMP('2023-04-08 18:00:00', 'YYYY-MM-DD HH24:MI:SS'), TO_TIMESTAMP('2023-04-09 17:00:00', 'YYYY-MM-DD HH24:MI:SS'), 'en cours de execution', 'Effectuer la maintenance du système',1,7);
 */
 /*****  procedure pour affecte personne a un projet      ******/
+CALL AJOUTER_TACHE2('projet1','31/05/2023 19:55',22,14,'tache2');
+call AFFECTERPERSONNEAPROJET(14,22,SYSDATE,'31/05/2023');
 CREATE OR REPLACE PROCEDURE AFFECTERPERSONNEAPROJET(
     ID_PER NUMBER,
     ID_POJ NUMBER,
@@ -222,6 +225,26 @@ BEGIN
     );
 END;
 /
+
+/****     fonction qui verifie si personne et affecte a ce projet           ***/
+
+CREATE OR REPLACE FUNCTION appartientAuProjet2(pn_val INT, id_projet_val INT)
+RETURN INT 
+AS
+  val AFFECTATIONPERSONNEL.PN%TYPE :=-1 ;
+BEGIN
+  SELECT pn INTO val FROM super.AFFECTATIONPERSONNEL WHERE pn = pn_val AND IDPROJ = id_projet_val;
+  
+  IF val!=-1 THEN
+    RETURN 1;
+  END IF;
+  RETURN 0;
+END;
+/
+SELECT appartientAuProjet2(13,22) AS resultat FROM dual;
+
+
+
 
 /*
 --  procedure pour affecte materiel a un projet   
