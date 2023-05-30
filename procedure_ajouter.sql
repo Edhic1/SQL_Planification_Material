@@ -231,16 +231,23 @@ END;
 CREATE OR REPLACE FUNCTION appartientAuProjet2(pn_val INT, id_projet_val INT)
 RETURN INT 
 AS
-  val AFFECTATIONPERSONNEL.PN%TYPE :=-1 ;
+  val super.AFFECTATIONPERSONNEL.PN%TYPE;
 BEGIN
-  SELECT pn INTO val FROM super.AFFECTATIONPERSONNEL WHERE pn = pn_val AND IDPROJ = id_projet_val;
+  BEGIN
+    SELECT 1 INTO val FROM super.AFFECTATIONPERSONNEL WHERE pn = pn_val AND IDPROJ = id_projet_val;
+  EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+      RETURN 0;
+  END;
   
-  IF val!=-1 THEN
+  IF val = 1 THEN
     RETURN 1;
+  ELSE
+    RETURN 0;
   END IF;
-  RETURN 0;
 END;
 /
+
 SELECT appartientAuProjet2(13,22) AS resultat FROM dual;
 
 

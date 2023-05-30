@@ -457,9 +457,11 @@ def ajouterTache():
                 DATEFIN1 = datetime.strptime(dateEstimation.strip(),'%d/%m/%Y %H:%M').date()
                 print(DATEFIN1)
                 
-                print(current_date_str.strip())
-                cursor.callproc('super.AFFECTERPERSONNEAPROJET', [id,projet,current_datetime,DATEFIN1])
-                conn.commit()
+                cursor.execute("SELECT super.FUNCISCHEF("+id+","+projet+") FROM dual")
+                result = cursor.fetchone()[0]
+                if result==0:
+                  cursor.callproc('super.appartientAuProjet2', [id,projet,current_datetime,DATEFIN1])
+                  conn.commit()
                 
                 cursor.execute("UPDATE super.PERSONNE SET ETATP = 'FALSE' WHERE PN = :my_PN" ,my_PN=id)
                 cursor.callproc('super.AJOUTER_TACHE2', [nomtache,dateEstimation,projet,i,description])
