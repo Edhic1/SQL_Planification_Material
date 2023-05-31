@@ -425,6 +425,9 @@ def ajouterTache():
         try:
             conn = cx_Oracle.connect(user=username, password=password, dsn=dsn)
             cursor = conn.cursor()
+            
+            # methode verifie si le non de projet est deja utilse si il est utilse dans en envoie une notification sinon on contunue l'execution
+            
             # get id of user connected from PN NUMBRE
             cursor.execute('SELECT PN FROM super.PERSONNE WHERE NOMP = :user_name ', user_name=username.upper())
             PN =  int( cursor.fetchone()[0]) # get first element of the result
@@ -456,15 +459,15 @@ def ajouterTache():
                 #DATEFIN1 = datetime.strptime(dateEstimation.strip(), "%d/%m/%Y %H:%M")
                 DATEFIN1 = datetime.strptime(dateEstimation.strip(),'%d/%m/%Y %H:%M').date()
                 print(DATEFIN1)
-                
-                cursor.execute("SELECT super.FUNCISCHEF("+id+","+projet+") FROM dual")
-                result = cursor.fetchone()[0]
+                result = cursor.callfunc("super.appartientAuProjet2", int, [id,projet])
                 if result==0:
-                  cursor.callproc('super.appartientAuProjet2', [id,projet,current_datetime,DATEFIN1])
+                  print("je suis la condition")
+                  cursor.callproc('super.AFFECTERPERSONNEAPROJET', [id,projet,current_datetime,DATEFIN1])
                   conn.commit()
                 
                 cursor.execute("UPDATE super.PERSONNE SET ETATP = 'FALSE' WHERE PN = :my_PN" ,my_PN=id)
-                cursor.callproc('super.AJOUTER_TACHE2', [nomtache,dateEstimation,projet,i,description])
+                cursor.callproc('super.AJOUTER_TACHE2', [nomtache,dateEstimation,projet,id,description])
+                print("probleme dans ajouter tache ")
                 conn.commit()
                 
             # CREATE OR REPLACE PROCEDURE AFFECTERMATERIELTACHE(
@@ -474,21 +477,25 @@ def ajouterTache():
             #   DATEFINM DATE )
             for i in listMateriel.split(','):
                 # get id personne 
+                print(i)
                 cursor.execute('SELECT ID_MAT FROM super.MATERIEL WHERE NOMM = :my_materiel', my_materiel=i.strip())
                 i = int(cursor.fetchone()[0])
                 # change ETATP from MATERIEL to false of PN
-                cursor.execute("UPDATE super.MATERIEL SET ETATD = 'FALSE' WHERE ID_MAT = :my_id" ,my_id=cursor.fetchone()[0])
+                cursor.execute("UPDATE super.MATERIEL SET ETATD = 'FALSE' WHERE ID_MAT = :my_id" ,my_id=i)
                 # get id tache from  nomtache
                 cursor.execute('SELECT IDTACHE FROM super.TACHE WHERE NOMT = :my_tache ' ,my_tache=nomtache)
                 id_tache = int(cursor.fetchone()[0])
+                
                 current_datetime = datetime.now()
-                # Format current date as string with format DD/MM/YYYY
-                current_date_str = current_datetime.strftime('%d/%m/%Y')
+                current_date = current_datetime.date()
+
                 DATEFIN1 = datetime.strptime(dateEstimation, "%d/%m/%Y %H:%M")
-                DATEFIN1 = DATEFIN1.strftime('%d/%m/%Y')
-                cursor.callproc('super.AFFECTERMATERIELTACHE', [i,id_tache,current_date_str,DATEFIN1])
+                DATEFIN1_date = DATEFIN1.date()
+                
+                cursor.callproc('super.AFFECTERMATERIELTACHE', [i,id_tache,current_date,DATEFIN1_date])
+                conn.commit()
              
-            conn.commit()
+            
             conn.close()
 
             # return the list of tasks as a JSON response
