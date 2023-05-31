@@ -251,6 +251,72 @@ END;
 SELECT appartientAuProjet2(13,22) AS resultat FROM dual;
 
 
+/************* fonction qui verifie si le nom de cette tache existe ou non ****/
+
+CREATE OR REPLACE FUNCTION tacheExiste(nom VARCHAR2)
+RETURN INT 
+AS
+  val super.TACHE.nomt%TYPE;
+BEGIN
+  BEGIN
+    SELECT DISTINCT(1) INTO val FROM super.TACHE WHERE NOMT=nom;
+  EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+      RETURN 0;
+  END;
+  
+  IF val = 1 THEN
+    RETURN 1;
+  ELSE
+    RETURN 0;
+  END IF;
+END;
+/
+
+/************************ fontion qui verifie si le nom de ce projet existe ou non ***/
+CREATE OR REPLACE FUNCTION ProjetExiste(nom VARCHAR2)
+RETURN INT 
+AS
+  val super.PROJET.NOMPROJ%TYPE;
+BEGIN
+  BEGIN
+    SELECT DISTINCT(1) INTO val FROM super.PROJET WHERE NOMPROJ=nom;
+  EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+      RETURN 0;
+  END;
+  
+  IF val = 1 THEN
+    RETURN 1;
+  ELSE
+    RETURN 0;
+  END IF;
+END;
+/
+
+/********************* procedure qui permet de retirer le personne et le materiel de ce projet *****/
+
+CREATE or REPLACE PROCEDURE metreajourpersonne(id_tache int)AS
+CURSOR curs_pers is SELECT p.pn pn from TACHE t,PERSONNE p where t.IDTACHE=id_tache and p.pn=t.pn ; 
+BEGIN
+for val in curs_pers LOOP
+UPDATE PERSONNE set etatp='TRUE' where pn=val.pn;
+COMMIT;
+END LOOP;
+end;
+/
+
+create or REPLACE PROCEDURE metreajourMateriel(id_tache int) AS
+CURSOR curs_mat is SELECT A.ID_MAT idmat from TACHE t,AFFECTATIONMATERIEL A where t.IDTACHE=id_tache and t.IDTACHE=a.IDTACHE ; 
+BEGIN
+for val in curs_mat LOOP
+UPDATE MATERIEL set ETATD='TRUE' where ID_MAT=val.idmat;
+COMMIT;
+end loop;
+end;
+/
+
+
 
 
 /*

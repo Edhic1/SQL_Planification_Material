@@ -368,12 +368,12 @@ def ratetache():
         try:
             
             conn = cx_Oracle.connect(user=username, password=password, dsn=dsn)
-            
             cursor = conn.cursor()
             cursor.callproc("super.rateTache", [id_tache, scoreval])
-
-            # enregistrer les changements dans la base de données
             conn.commit()
+            cursor.callproc("super.metreajourpersonne",[id_tache])
+            cursor.callproc("super.metreajourMateriel",[id_tache])
+            # enregistrer les changements dans la base de données
             conn.close()
             return jsonify({"etat": "ok"}), 200
         except cx_Oracle.DatabaseError as e:
@@ -396,8 +396,13 @@ def ajouterProjet():
         try:
             conn = cx_Oracle.connect(user=username, password=password, dsn=dsn)
             cursor = conn.cursor()
-            # get id of user connected from PN NUMBRE
-
+           
+            # methode verifie si le non de projet est deja utilse si il est utilse dans en envoie une notification sinon on contunue l'execution
+            val = cursor.callfunc("super.ProjetExiste", int, [nomproj])
+            if val==1:
+                return jsonify({'status': 'error', 'message': 'projetExiste'})
+            
+             # get id of user connected from PN NUMBRE
             cursor.execute('SELECT PN FROM super.PERSONNE WHERE NOMP = :user_name',user_name=username)
             PN = int(cursor.fetchone()[0]) # get first element of the result
             cursor.callproc('super.AJOUTER_PROJET', [nomproj, date_fin, description,PN,date_deb])
@@ -426,7 +431,10 @@ def ajouterTache():
             conn = cx_Oracle.connect(user=username, password=password, dsn=dsn)
             cursor = conn.cursor()
             
-            # methode verifie si le non de projet est deja utilse si il est utilse dans en envoie une notification sinon on contunue l'execution
+            # methode verifie si le non de tache est deja utilse si il est utilse dans en envoie une notification sinon on contunue l'execution
+            val = cursor.callfunc("super.tacheExiste", int, [nomtache])
+            if val==1:
+                return jsonify({'status': 'error', 'message': 'tacheExiste'})
             
             # get id of user connected from PN NUMBRE
             cursor.execute('SELECT PN FROM super.PERSONNE WHERE NOMP = :user_name ', user_name=username.upper())
