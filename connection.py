@@ -403,7 +403,7 @@ def ajouterProjet():
                 return jsonify({'status': 'error', 'message': 'projetExiste'})
             
              # get id of user connected from PN NUMBRE
-            cursor.execute('SELECT PN FROM super.PERSONNE WHERE NOMP = :user_name',user_name=username)
+            cursor.execute('SELECT PN FROM super.PERSONNE WHERE NOMP = :user_name',user_name=username.upper())
             PN = int(cursor.fetchone()[0]) # get first element of the result
             cursor.callproc('super.AJOUTER_PROJET', [nomproj, date_fin, description,PN,date_deb])
             conn.commit()
