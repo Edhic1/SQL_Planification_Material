@@ -632,9 +632,10 @@ def getTaches():
             conn = cx_Oracle.connect(user=username, password=password, dsn=dsn)
             cursor = conn.cursor()
             # get id personne 
-            cursor.execute('SELECT PN FROM super.PERSONNE WHERE NOMP = :my_personne ' ,my_personne=username)
+            cursor.execute('SELECT PN FROM super.PERSONNE WHERE NOMP = :my_personne ' ,my_personne=username.upper())
             PN =   cursor.fetchone()[0]  # get first element of the result
-            cursor.execute("SELECT * FROM super.TACHE WHERE PN = :my_PN " ,my_PN=PN)
+            print(PN)
+            cursor.execute("select * from super.tache where idproj in (select idproj from super.projet where pn= :my_PN) " ,my_PN=PN)
             result = cursor.fetchall()
             # Transformation des données en format JSON
             tacheData = []
@@ -652,10 +653,13 @@ def getTaches():
                     'PN': row[9],
 
                 })
+                
+            print(tacheData)
 
             # return the list of tasks as a JSON response
-            return jsonify({'message': 'success','taches': tacheData}), 200
+            return jsonify({'status': 'success','taches': tacheData}), 200
         except cx_Oracle.DatabaseError as e:
+            print(str(e))
             return jsonify({'status': 'error', 'message': 'Database error: ' + str(e)})
     else:
         return 'OK'
