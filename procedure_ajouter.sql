@@ -23,7 +23,7 @@ CREATE OR REPLACE PROCEDURE AJOUTER_PERSONNE (
     P_DATEEMB IN DATE,
     P_TITRE IN VARCHAR2,
     P_NDEP IN NUMBER,
-    ischef IN NUMBER DEFAULT 0
+    ISCHEF IN NUMBER DEFAULT 0
 ) AS
     TMP VARCHAR2(60);
 BEGIN
@@ -38,30 +38,32 @@ BEGIN
         NDEP
     ) VALUES (
         SEQ_PERSONNE.NEXTVAL,
-        upper(P_NOMP),
+        UPPER(P_NOMP),
         P_PRENOM,
         P_EMAIL,
         P_DATEEMB,
         P_TITRE,
         P_NDEP
     );
-    EXECUTE IMMEDIATE 'create user ' || P_NOMP || ' identified by ' || TMP;
-    EXECUTE IMMEDIATE 'GRANT CREATE SESSION TO ' || P_NOMP;
-    
-    IF (ischef = 1) THEN
-        EXECUTE IMMEDIATE 'GRANT ROLECHEF2 TO ' || P_NOMP;
+    EXECUTE IMMEDIATE 'create user '
+        || P_NOMP
+        || ' identified by 1234 ';
+    EXECUTE IMMEDIATE 'GRANT CREATE SESSION TO '
+        || P_NOMP;
+    IF (ISCHEF = 1) THEN
+        EXECUTE IMMEDIATE 'GRANT ROLECHEF2 TO '
+            || P_NOMP;
     ELSE
-        EXECUTE IMMEDIATE 'GRANT ROLEEMP TO ' || P_NOMP;
+        EXECUTE IMMEDIATE 'GRANT ROLEEMP TO '
+            || P_NOMP;
     END IF;
-
     INSERT INTO USERPASSWORD VALUES (
         SEQ_PERSONNE.CURRVAL,
-        P_NOMP,
+        UPPER(P_NOMP),
         TMP
     );
 END;
 /
-
 
 -- Procédure pour l'ajout d'un département
 CREATE OR REPLACE PROCEDURE AJOUTER_DEPARTEMENT (
@@ -149,7 +151,8 @@ END;
 /
 
 -- Procédure pour l'ajout d'une tâche
-call AJOUTER_TACHE2('projet1','30/05/2023 19:55',22,14,'tache2');
+CALL AJOUTER_TACHE2('projet1', '30/05/2023 19:55', 22, 14, 'tache2');
+
 CREATE OR REPLACE PROCEDURE AJOUTER_TACHE2 (
     P_NOMT IN VARCHAR2,
     P_DUREE_ESTIMEE IN VARCHAR2,
@@ -208,8 +211,10 @@ INSERT INTO TACHE
 VALUES (SEQ_TACHE.NEXTVAL,, TO_TIMESTAMP('2023-04-08 18:00:00', 'YYYY-MM-DD HH24:MI:SS'), TO_TIMESTAMP('2023-04-09 17:00:00', 'YYYY-MM-DD HH24:MI:SS'), 'en cours de execution', 'Effectuer la maintenance du système',1,7);
 */
 /*****  procedure pour affecte personne a un projet      ******/
-CALL AJOUTER_TACHE2('projet1','31/05/2023 19:55',22,14,'tache2');
-call AFFECTERPERSONNEAPROJET(14,22,SYSDATE,'31/05/2023');
+CALL AJOUTER_TACHE2('projet1', '31/05/2023 19:55', 22, 14, 'tache2');
+
+CALL AFFECTERPERSONNEAPROJET(14, 22, SYSDATE, '31/05/2023');
+
 CREATE OR REPLACE PROCEDURE AFFECTERPERSONNEAPROJET(
     ID_PER NUMBER,
     ID_POJ NUMBER,
@@ -228,96 +233,138 @@ END;
 
 /****     fonction qui verifie si personne et affecte a ce projet           ***/
 
-CREATE OR REPLACE FUNCTION appartientAuProjet2(pn_val INT, id_projet_val INT)
-RETURN INT 
-AS
-  val super.AFFECTATIONPERSONNEL.PN%TYPE;
+CREATE OR REPLACE FUNCTION APPARTIENTAUPROJET2(
+    PN_VAL INT,
+    ID_PROJET_VAL INT
+) RETURN INT AS
+    VAL SUPER.AFFECTATIONPERSONNEL.PN%TYPE;
 BEGIN
-  BEGIN
-    SELECT 1 INTO val FROM super.AFFECTATIONPERSONNEL WHERE pn = pn_val AND IDPROJ = id_projet_val;
-  EXCEPTION
-    WHEN NO_DATA_FOUND THEN
-      RETURN 0;
-  END;
-  
-  IF val = 1 THEN
-    RETURN 1;
-  ELSE
-    RETURN 0;
-  END IF;
+    BEGIN
+        SELECT
+            1 INTO VAL
+        FROM
+            SUPER.AFFECTATIONPERSONNEL
+        WHERE
+            PN = PN_VAL
+            AND IDPROJ = ID_PROJET_VAL;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            RETURN 0;
+    END;
+    IF VAL = 1 THEN
+        RETURN 1;
+    ELSE
+        RETURN 0;
+    END IF;
 END;
 /
 
-SELECT appartientAuProjet2(13,22) AS resultat FROM dual;
-
+SELECT
+    APPARTIENTAUPROJET2(13,
+    22) AS RESULTAT
+FROM
+    DUAL;
 
 /************* fonction qui verifie si le nom de cette tache existe ou non ****/
 
-CREATE OR REPLACE FUNCTION tacheExiste(nom VARCHAR2)
-RETURN INT 
-AS
-  val super.TACHE.nomt%TYPE;
+CREATE OR REPLACE FUNCTION TACHEEXISTE(
+    NOM VARCHAR2
+) RETURN INT AS
+    VAL SUPER.TACHE.NOMT%TYPE;
 BEGIN
-  BEGIN
-    SELECT DISTINCT(1) INTO val FROM super.TACHE WHERE NOMT=nom;
-  EXCEPTION
-    WHEN NO_DATA_FOUND THEN
-      RETURN 0;
-  END;
-  
-  IF val = 1 THEN
-    RETURN 1;
-  ELSE
-    RETURN 0;
-  END IF;
+    BEGIN
+        SELECT
+            DISTINCT(1) INTO VAL
+        FROM
+            SUPER.TACHE
+        WHERE
+            NOMT=NOM;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            RETURN 0;
+    END;
+    IF VAL = 1 THEN
+        RETURN 1;
+    ELSE
+        RETURN 0;
+    END IF;
 END;
 /
 
 /************************ fontion qui verifie si le nom de ce projet existe ou non ***/
-CREATE OR REPLACE FUNCTION ProjetExiste(nom VARCHAR2)
-RETURN INT 
-AS
-  val super.PROJET.NOMPROJ%TYPE;
+CREATE OR REPLACE FUNCTION PROJETEXISTE(
+    NOM VARCHAR2
+) RETURN INT AS
+    VAL SUPER.PROJET.NOMPROJ%TYPE;
 BEGIN
-  BEGIN
-    SELECT DISTINCT(1) INTO val FROM super.PROJET WHERE NOMPROJ=nom;
-  EXCEPTION
-    WHEN NO_DATA_FOUND THEN
-      RETURN 0;
-  END;
-  
-  IF val = 1 THEN
-    RETURN 1;
-  ELSE
-    RETURN 0;
-  END IF;
+    BEGIN
+        SELECT
+            DISTINCT(1) INTO VAL
+        FROM
+            SUPER.PROJET
+        WHERE
+            NOMPROJ=NOM;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            RETURN 0;
+    END;
+    IF VAL = 1 THEN
+        RETURN 1;
+    ELSE
+        RETURN 0;
+    END IF;
 END;
 /
 
 /********************* procedure qui permet de retirer le personne et le materiel de ce projet *****/
 
-CREATE or REPLACE PROCEDURE metreajourpersonne(id_tache int)AS
-CURSOR curs_pers is SELECT p.pn pn from TACHE t,PERSONNE p where t.IDTACHE=id_tache and p.pn=t.pn ; 
+CREATE OR REPLACE PROCEDURE METREAJOURPERSONNE(
+    ID_TACHE INT
+)AS
+    CURSOR CURS_PERS IS
+        SELECT
+            P.PN PN
+        FROM
+            TACHE    T,
+            PERSONNE P
+        WHERE
+            T.IDTACHE=ID_TACHE
+            AND P.PN=T.PN;
 BEGIN
-for val in curs_pers LOOP
-UPDATE PERSONNE set etatp='TRUE' where pn=val.pn;
-COMMIT;
-END LOOP;
-end;
+    FOR VAL IN CURS_PERS LOOP
+        UPDATE PERSONNE
+        SET
+            ETATP='TRUE'
+        WHERE
+            PN=VAL.PN;
+        COMMIT;
+    END LOOP;
+END;
 /
 
-create or REPLACE PROCEDURE metreajourMateriel(id_tache int) AS
-CURSOR curs_mat is SELECT A.ID_MAT idmat from TACHE t,AFFECTATIONMATERIEL A where t.IDTACHE=id_tache and t.IDTACHE=a.IDTACHE ; 
+CREATE OR REPLACE PROCEDURE METREAJOURMATERIEL(
+    ID_TACHE INT
+) AS
+    CURSOR CURS_MAT IS
+        SELECT
+            A.ID_MAT IDMAT
+        FROM
+            TACHE               T,
+            AFFECTATIONMATERIEL A
+        WHERE
+            T.IDTACHE=ID_TACHE
+            AND T.IDTACHE=A.IDTACHE;
 BEGIN
-for val in curs_mat LOOP
-UPDATE MATERIEL set ETATD='TRUE' where ID_MAT=val.idmat;
-COMMIT;
-end loop;
-end;
+    FOR VAL IN CURS_MAT LOOP
+        UPDATE MATERIEL
+        SET
+            ETATD='TRUE'
+        WHERE
+            ID_MAT=VAL.IDMAT;
+        COMMIT;
+    END LOOP;
+END;
 /
-
-
-
 
 /*
 --  procedure pour affecte materiel a un projet   
@@ -354,7 +401,12 @@ END;
 CREATE OR REPLACE FUNCTION FUNCISCHEF RETURN INTEGER IS
     VAR INTEGER;
 BEGIN
-    SELECT ISCHEF INTO VAR FROM PERSONNE WHERE UPPER(NOMP) = USER;
+    SELECT
+        ISCHEF INTO VAR
+    FROM
+        PERSONNE
+    WHERE
+        UPPER(NOMP) = USER;
     IF VAR = 1 THEN
         RETURN 1;
     ELSE
@@ -406,10 +458,15 @@ END;
 --GRANT ROLECHEF2 TO super WITH ADMIN OPTION;
 
 CREATE OR REPLACE PROCEDURE AFFECTERROLETOUSER IS
-    CURSOR CURUSER IS SELECT USERNAME FROM USERPASSWORD;
+    CURSOR CURUSER IS
+        SELECT
+            USERNAME
+        FROM
+            USERPASSWORD;
 BEGIN
     FOR VAL IN CURUSER LOOP
-        EXECUTE IMMEDIATE 'grant ROLECHEF2 to '||val.USERNAME;
+        EXECUTE IMMEDIATE 'grant ROLECHEF2 to '
+            ||VAL.USERNAME;
     END LOOP;
 END;
 /

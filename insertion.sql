@@ -71,6 +71,14 @@ CALL AJOUTER_PROJET('projet9','05/07/2024','Description Projet 3',7);
 CALL AJOUTER_PROJET('projet10','05/07/2024','Description Projet 3',7);
 CALL AJOUTER_PROJET('projet12','05/07/2024','Description Projet 3',7);
 
+-------------- les chef de projet
+
+call AJOUTER_PERSONNE('mohamed','elouafi','elouafimed@gmail.com',SYSDATE,'ingénieur',10,1);
+call AJOUTER_PERSONNE('hicham','hicham2','hicham@gmail.com',SYSDATE,'ingénieur',9,1);
+call AJOUTER_PERSONNE('laila','lail2','laila@gmail.com',SYSDATE,'ingénieur',8,1);
+call AJOUTER_PERSONNE('nabilchef','etihdi','nabil@gmail.com',SYSDATE,'ingénieur',7,1);
+
+-----------autre employer
 
 ----INSERT INTO PROJET (IDPROJ, NOMPROJ, DATEDEB,DATEFIN, DESCRIPTION, PN, ETATPROJ) VALUES 
 --(SEQ_PROJET.NEXTVAL, 'Projet 11', TO_DATE('01/01/2023', 'DD/MM/YYYY'),TO_DATE('01/01/2024', 'DD/MM/YYYY'), 'Description Projet 3',6, 'en cours de execution');
