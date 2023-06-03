@@ -41,7 +41,8 @@ CREATE OR REPLACE VIEW AFFICHERTACHEPROJETCHEF(
     SCORE,
     IDPROJ,
     NOMPROJ,
-    NOMEMP
+    NOMEMP,
+    nomtache
 )AS
     SELECT
         T.IDTACHE,
@@ -53,7 +54,8 @@ CREATE OR REPLACE VIEW AFFICHERTACHEPROJETCHEF(
         T.SCORE,
         T.IDPROJ,
         PR.NOMPROJ,
-        P.NOMP
+        P.NOMP,
+        T.NOMT
     FROM
         TACHE                T,
         PROJET               PR,
@@ -84,7 +86,8 @@ CREATE OR REPLACE VIEW AFFICHERTACHEEMP(
     SCORE,
     IDPROJ,
     NOMPROJ,
-    NOMEMP
+    NOMEMP,
+    nomtache
 ) AS
     SELECT
         T.IDTACHE,
@@ -96,7 +99,8 @@ CREATE OR REPLACE VIEW AFFICHERTACHEEMP(
         T.SCORE,
         T.IDPROJ,
         PR.NOMPROJ,
-        P.NOMP
+        P.NOMP,
+        T.NOMT
     FROM
         TACHE                T,
         PROJET               PR,

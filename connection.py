@@ -204,6 +204,7 @@ def get_task_poject():
                         "IDPROJ": row[7],
                         "nomproj": row[8],
                         "NOMEMP": row[9],
+                        "nomtache":row[10]
                     }
                 )
             print(data)
