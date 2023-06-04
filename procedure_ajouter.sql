@@ -231,6 +231,20 @@ BEGIN
 END;
 /
 
+/******************** fonction permettant de retourner la liste des matereille utilise pour cette tache ***/
+CREATE OR REPLACE FUNCTION recupererTache(id_tache IN INT) RETURN VARCHAR2 AS
+  resulta VARCHAR2(1000) := '';
+  CURSOR cur_mateselect IS
+    SELECT DISTINCT m.NOMM AS nomm FROM AFFECTATIONMATERIEL a, MATERIEL m WHERE a.ID_MAT = m.ID_MAT AND a.idtache = id_tache;
+BEGIN
+  FOR val IN cur_mateselect LOOP
+    resulta := resulta || val.nomm || ',';
+  END LOOP;
+  RETURN resulta;
+END;
+/
+
+
 /****     fonction qui verifie si personne et affecte a ce projet           ***/
 
 CREATE OR REPLACE FUNCTION APPARTIENTAUPROJET2(

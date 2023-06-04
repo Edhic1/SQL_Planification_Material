@@ -664,6 +664,29 @@ def getTaches():
             return jsonify({'status': 'error', 'message': 'Database error: ' + str(e)})
     else:
         return 'OK'
+  
+@app.route('/recuperermaterilletache',methods=['POST','GET'])
+def afficheMateriel():
+    if request.method == 'POST':
+        data = request.get_json()
+        username = data['username']
+        password = data['password']
+        idtache=data['idtache']
+
+        try:
+            conn = cx_Oracle.connect(user=username, password=password, dsn=dsn)
+            cursor = conn.cursor()
+            
+            result = cursor.callfunc("super.recupererTache", VARCHAR2, [idtache])
+            print(result)
+            conn.close()
+            # return the list of tasks as a JSON response
+            return jsonify({'message': 'success','materiels': result}), 200
+        except cx_Oracle.DatabaseError as e:
+            return jsonify({'status': 'error', 'message': 'Database error: ' + str(e)})
+    else:
+        return 'OK'    
+
 
 @app.route('/deconnection', methods=['POST', 'GET'])
 def decon():
