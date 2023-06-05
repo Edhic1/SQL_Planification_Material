@@ -17,7 +17,7 @@ BEGIN
   DBMS_SCHEDULER.CREATE_JOB (
     job_name        => 'update_etatproj_job',
     job_type        => 'EXECUTABLE',
-    job_action      => '/opt/oracle/instantclient_21_4/sqlplus /nolog @/home/hicham/update_etatproj.sql',
+    job_action      => '/opt/oracle/instantclient_21_4/sqlplus super/oracle_db@//20.55.44.15:1521/ORCLCDB.localdomain @/home/hicham/update_etatproj.sql',
     start_date      => SYSTIMESTAMP,
     repeat_interval => 'FREQ=DAILY;BYHOUR=0;BYMINUTE=0;BYSECOND=0',
     enabled         => TRUE
@@ -31,7 +31,7 @@ BEGIN
   DBMS_SCHEDULER.CREATE_JOB (
     job_name        => 'update_etatproj_job',
     job_type        => 'EXECUTABLE',
-    job_action      => '/opt/oracle/instantclient_21_4/sqlplus /nolog @/home/hicham/update_etatproj.sql',
+    job_action      => '/opt/oracle/instantclient_21_4/sqlplus super/oracle_db@//20.55.44.15:1521/ORCLCDB.localdomain @/home/hicham/update_etatproj.sql',
     start_date      => SYSTIMESTAMP,
     repeat_interval => 'FREQ=MINUTELY;INTERVAL=1',
     enabled         => TRUE
@@ -49,3 +49,8 @@ BEGIN
   );
 END;
 /
+
+
+UPDATE PROJET
+SET ETATPROJ = 'terminee'
+WHERE IDPROJ = 30;
