@@ -641,6 +641,10 @@ def getTaches():
             # Transformation des données en format JSON
             tacheData = []
             for row in result:
+                cursor.execute('SELECT NOMPROJ FROM super.PROJET WHERE IDPROJ = :my_idproj', my_idproj=row[8])
+                nameproj = cursor.fetchone()[0]
+                cursor.execute('SELECT NOMP FROM super.PERSONNE WHERE PN = :my_PN', my_PN=row[9])
+                namepersonne = cursor.fetchone()[0]
                 tacheData.append({
                     'IDTACHE': row[0],
                     'NOMT': row[1],
@@ -652,6 +656,8 @@ def getTaches():
                     'SCORE': row[7],
                     'IDPROJ': row[8],
                     'PN': row[9],
+                    'nomproj': nameproj,
+                    'nompersonne': namepersonne
 
                 })
                 
