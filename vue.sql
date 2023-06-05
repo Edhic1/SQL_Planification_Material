@@ -42,7 +42,8 @@ CREATE OR REPLACE VIEW AFFICHERTACHEPROJETCHEF(
     IDPROJ,
     NOMPROJ,
     NOMEMP,
-    NOMTACHE
+    NOMTACHE,
+    NOMCHEF
 )AS
     SELECT
         T.IDTACHE,
@@ -55,17 +56,20 @@ CREATE OR REPLACE VIEW AFFICHERTACHEPROJETCHEF(
         T.IDPROJ,
         PR.NOMPROJ,
         P.NOMP,
-        T.NOMT
+        T.NOMT,
+        CHEF.NOMP
     FROM
         TACHE                T,
         PROJET               PR,
         PERSONNE             P,
-        AFFECTATIONPERSONNEL AFF
+        AFFECTATIONPERSONNEL AFF,
+        PERSONNE             CHEF
     WHERE
         P.PN=AFF.PN
         AND PR.IDPROJ=AFF.IDPROJ
         AND T.PN=AFF.PN
         AND T.IDPROJ=AFF.IDPROJ
+        AND PR.PN=CHEF.PN
         AND PR.PN=(
             SELECT
                 PN
@@ -87,7 +91,8 @@ CREATE OR REPLACE VIEW AFFICHERTACHEEMP(
     IDPROJ,
     NOMPROJ,
     NOMEMP,
-    NOMTACHE
+    NOMTACHE,
+    CHEF
 ) AS
     SELECT
         T.IDTACHE,
@@ -100,17 +105,20 @@ CREATE OR REPLACE VIEW AFFICHERTACHEEMP(
         T.IDPROJ,
         PR.NOMPROJ,
         P.NOMP,
-        T.NOMT
+        T.NOMT,
+        CHEF.NOMP
     FROM
         TACHE                T,
         PROJET               PR,
         PERSONNE             P,
-        AFFECTATIONPERSONNEL AFF
+        AFFECTATIONPERSONNEL AFF,
+        PERSONNE             CHEF
     WHERE
         P.PN=AFF.PN
         AND PR.IDPROJ=AFF.IDPROJ
         AND T.PN=AFF.PN
         AND T.IDPROJ=AFF.IDPROJ
+        AND PR.PN=CHEF.PN
         AND T.PN=(
             SELECT
                 PN
